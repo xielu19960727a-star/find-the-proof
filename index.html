@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>迷案卷宗</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;color:#e8e6e3;background:#0f1115}
+body{display:flex;justify-content:center}
+#app{width:100%;max-width:480px;height:100%;position:relative;background:linear-gradient(180deg,#0f1115,#1a1d24);overflow:hidden}
+button{font-family:inherit;color:inherit;border:none;background:none;cursor:pointer}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2e3440;border-radius:3px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}.screen.active{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes cardPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 20px rgba(212,160,23,.3)}}
+@keyframes hpPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.3);opacity:1}}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-16px)}}
+@keyframes tPulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(2.5);opacity:.7}}
+.top-bar{display:flex;align-items:center;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:rgba(15,17,21,.95);border-bottom:1px solid #2e3440;min-height:48px;gap:10px;flex-shrink:0;z-index:10}
+.back-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:#9aa0a6;flex-shrink:0;border-radius:50%}
+.back-btn:active{background:#2e3440}
+.bar-title{flex:1;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-status{display:flex;align-items:center;gap:10px;font-size:12px;color:#9aa0a6;flex-shrink:0}
+.insight{color:#d4a017;display:flex;align-items:center;gap:3px}
+.bottom-nav{display:flex;background:rgba(15,17,21,.97);border-top:1px solid #2e3440;padding-bottom:env(safe-area-inset-bottom,0px);flex-shrink:0}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0;min-height:52px;color:#9aa0a6;font-size:10px;gap:2px;transition:color .2s;position:relative}
+.nav-item.active{color:#d4a017}.nav-item.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:#d4a017;border-radius:0 0 2px 2px}
+.nav-item svg{width:20px;height:20px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px}
+.card{background:#1e222b;border:1px solid #2e3440;border-radius:12px;padding:14px;margin-bottom:10px;transition:transform .15s}
+.card:active{transform:scale(.97)}
+.card.highlight{animation:cardPulse .6s ease}
+.badge{display:inline-flex;padding:2px 7px;border-radius:8px;font-size:11px;font-weight:500}
+.badge-ev{background:rgba(212,160,23,.15);color:#d4a017}.badge-te{background:rgba(142,68,173,.15);color:#8e44ad}
+.badge-do{background:rgba(52,152,219,.15);color:#3498db}.badge-re{background:rgba(192,57,43,.15);color:#c0392b}
+.menu-screen{justify-content:center;align-items:center;padding:32px;text-align:center}
+.menu-title{font-size:28px;font-weight:700;letter-spacing:4px;margin-bottom:6px}
+.menu-sub{font-size:13px;color:#9aa0a6;letter-spacing:2px;margin-bottom:40px}
+.menu-btn{display:block;width:100%;max-width:260px;padding:13px 20px;margin:0 auto 10px;border-radius:12px;font-size:15px;font-weight:600;transition:all .15s}
+.menu-btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,#c0392b,#a93226);color:#fff}
+.btn-s{background:#1e222b;border:1px solid #2e3440;color:#e8e6e3}
+.btn-g{background:transparent;color:#9aa0a6}
+.scene-wrap{position:relative;width:100%;aspect-ratio:3/4;max-height:52vh;background:#161920;border:1px solid #2e3440;border-radius:12px;overflow:hidden;margin-bottom:12px}
+.sc-wall{position:absolute;background:#2e3440;border-radius:2px}
+.sc-furn{position:absolute;background:#252a35;border:1px solid #353b48;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9aa0a6}
+.hotspot{position:absolute;width:42px;height:42px;transform:translate(-50%,-50%);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.hotspot::before{content:'';position:absolute;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(212,160,23,.5);animation:hpPulse 2s infinite}
+.hotspot::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#d4a017}
+.hotspot.done::before{border-color:rgba(39,174,96,.5)}.hotspot.done::after{background:#27ae60}
+.hotspot.hidden{display:none}
+.scene-tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:4px}
+.scene-tab{padding:7px 14px;border-radius:18px;font-size:12px;white-space:nowrap;background:#1e222b;border:1px solid #2e3440;color:#9aa0a6;flex-shrink:0}
+.scene-tab.active{background:rgba(212,160,23,.15);border-color:#d4a017;color:#d4a017}
+.suspect-card{display:flex;align-items:center;gap:12px;cursor:pointer}
+.suspect-av{width:48px;height:48px;border-radius:50%;background:#252a35;border:2px solid #2e3440;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dlg-area{flex:1;overflow-y:auto;padding:14px}
+.dlg-bubble{margin-bottom:12px;animation:fadeIn .3s ease}
+.dlg-speaker{font-size:12px;font-weight:600;margin-bottom:3px;color:#d4a017}
+.dlg-text{font-size:14px;line-height:1.7;background:#252a35;padding:10px 14px;border-radius:10px;border-top-left-radius:3px}
+.dlg-text.reveal{border-left:3px solid #8e44ad;background:rgba(142,68,173,.08)}
+.dlg-text.contra{border-left:3px solid #c0392b;background:rgba(192,57,43,.08)}
+.q-area{padding:10px 14px;border-top:1px solid #2e3440;flex-shrink:0;max-height:42%}
+.q-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:calc(100% - 44px)}
+.q-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;background:#252a35;border-radius:9px;font-size:13px;text-align:left;transition:all .15s}
+.q-btn:active{transform:scale(.97)}.q-btn.used{opacity:.35;pointer-events:none}
+.ev-btn{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:600;background:rgba(192,57,43,.15);color:#c0392b;border:1px solid rgba(192,57,43,.3)}
+.ev-picker{position:absolute;bottom:0;left:0;right:0;max-height:55%;background:#1a1d24;border-top:1px solid #2e3440;border-radius:14px 14px 0 0;z-index:20;transform:translateY(100%);transition:transform .3s;display:flex;flex-direction:column}
+.ev-picker.show{transform:translateY(0)}
+.ev-item{display:flex;align-items:center;gap:8px;padding:10px;background:#252a35;border-radius:9px;margin-bottom:6px;cursor:pointer;font-size:13px}
+.ev-item:active{transform:scale(.97)}
+.tl-track{position:relative;padding:16px 0 16px 36px}
+.tl-line{position:absolute;left:16px;top:0;bottom:0;width:2px;background:#2e3440}
+.tl-slot{position:relative;margin-bottom:18px;min-height:40px}
+.tl-dot{position:absolute;left:-27px;top:3px;width:14px;height:14px;border-radius:50%;border:2px solid #2e3440;background:#1a1d24;z-index:1}
+.tl-dot.filled{border-color:#d4a017;background:#d4a017}.tl-dot.wrong{border-color:#c0392b;background:#c0392b}
+.tl-time{font-size:11px;color:#d4a017;margin-bottom:3px;font-weight:600}
+.tl-empty{padding:10px 12px;background:#252a35;border:1px dashed #2e3440;border-radius:9px;font-size:12px;color:#9aa0a6;cursor:pointer}
+.tl-filled{padding:10px 12px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:9px;font-size:12px;cursor:pointer}
+.tl-pool{margin-top:14px;padding-top:12px;border-top:1px solid #2e3440}
+.pool-item{padding:10px 12px;background:#252a35;border:1px solid #2e3440;border-radius:9px;font-size:12px;margin-bottom:6px;cursor:pointer}
+.pool-item:active{transform:scale(.97)}.pool-item.sel{border-color:#d4a017;background:rgba(212,160,23,.1)}.pool-item.placed{opacity:.3;pointer-events:none}
+.check-btn{display:block;margin:14px auto 0;padding:11px 28px;border-radius:11px;font-size:14px;font-weight:600;background:linear-gradient(135deg,#d4a017,#b8860b);color:#0f1115}
+.check-btn:disabled{opacity:.35;pointer-events:none}
+.clue-filters{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.clue-filter{padding:5px 12px;border-radius:14px;font-size:12px;white-space:nowrap;background:#1e222b;border:1px solid #2e3440;color:#9aa0a6;flex-shrink:0}
+.clue-filter.active{background:rgba(212,160,23,.15);border-color:#d4a017;color:#d4a017}
+.synth-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 0}
+.synth-slots{display:flex;align-items:center;gap:10px;width:100%}
+.synth-slot{flex:1;min-height:64px;background:#252a35;border:1px dashed #2e3440;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px;text-align:center;cursor:pointer;font-size:12px}
+.synth-slot.filled{border-style:solid;border-color:#d4a017;background:rgba(212,160,23,.08)}
+.synth-result{width:100%;min-height:64px;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px;text-align:center;font-size:13px;color:#27ae60;cursor:pointer}
+.acc-suspect{display:flex;align-items:center;gap:10px;padding:12px;background:#252a35;border:2px solid #2e3440;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.acc-suspect:active{transform:scale(.97)}.acc-suspect.selected{border-color:#c0392b;background:rgba(192,57,43,.08)}
+.acc-ev{display:flex;align-items:center;gap:8px;padding:10px;background:#252a35;border:2px solid #2e3440;border-radius:9px;margin-bottom:6px;cursor:pointer;font-size:13px}
+.acc-ev:active{transform:scale(.97)}.acc-ev.selected{border-color:#d4a017;background:rgba(212,160,23,.08)}
+.chk{width:20px;height:20px;border-radius:50%;border:2px solid #2e3440;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acc-ev.selected .chk{border-color:#d4a017;background:#d4a017;color:#0f1115}
+.submit-btn{display:block;width:100%;padding:13px;border-radius:11px;font-size:15px;font-weight:700;text-align:center;margin-top:14px}
+.submit-btn.ready{background:linear-gradient(135deg,#c0392b,#a93226);color:#fff}
+.submit-btn.not-ready{background:#252a35;color:#9aa0a6;pointer-events:none}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-ov.show{display:flex}
+.modal{background:#1e222b;border:1px solid #2e3440;border-radius:14px;width:100%;max-width:380px;max-height:75vh;overflow-y:auto;animation:fadeIn .3s}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid #2e3440}
+.modal-body{padding:14px}.modal-body p{font-size:14px;line-height:1.7;margin-bottom:10px}
+.clue-found{display:flex;align-items:center;gap:6px;padding:9px 12px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.2);border-radius:9px;margin-top:6px;font-size:13px;color:#d4a017;animation:cardPulse .6s}
+.modal-ftr{padding:10px 14px;border-top:1px solid #2e3440;display:flex;justify-content:flex-end}
+.modal-btn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:600;background:rgba(212,160,23,.15);color:#d4a017}
+#toasts{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:6px;pointer-events:none;width:88%;max-width:380px}
+.toast{padding:10px 16px;border-radius:9px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;animation:toastIn .3s;pointer-events:auto}
+.toast.hiding{animation:toastOut .3s forwards}
+.toast-clue{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);color:#d4a017}
+.toast-twist{background:rgba(142,68,173,.2);border:1px solid rgba(142,68,173,.4);color:#8e44ad}
+.toast-ok{background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);color:#27ae60}
+.toast-warn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#c0392b}
+.twist-ov{position:fixed;inset:0;background:#0a0b0e;z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;padding:28px;text-align:center}
+.twist-ov.show{display:flex}
+.twist-pulse{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(142,68,173,.3),transparent);animation:tPulse 2s infinite}
+.twist-text{font-size:18px;font-weight:600;color:#8e44ad;line-height:1.8;z-index:1;min-height:80px;display:flex;align-items:center;justify-content:center}
+.twist-skip{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));font-size:13px;color:#9aa0a6;z-index:1}
+.end-screen{justify-content:center;align-items:center;padding:28px;text-align:center}
+.end-stars{display:flex;gap:6px;margin-bottom:20px}
+.end-stars svg{width:36px;height:36px}
+.star-f{color:#d4a017}.star-e{color:#2e3440}
+.review-banner{background:rgba(142,68,173,.1);border:1px solid rgba(142,68,173,.3);border-radius:9px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-size:13px;color:#8e44ad}
+.contra-card{border-left:3px solid #8e44ad;cursor:pointer;margin-bottom:8px;padding:12px;background:#1e222b;border-radius:0 10px 10px 0}
+.contra-card.found{border-left-color:#27ae60;background:rgba(39,174,96,.05)}
+.ach-card{display:flex;align-items:center;gap:10px;padding:12px}
+.ach-card.unlocked{border-color:rgba(212,160,23,.3)}.ach-card.locked{opacity:.45}
+.ach-icon{width:40px;height:40px;border-radius:50%;background:#252a35;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.empty-state{display:flex;flex-direction:column;align-items:center;padding:36px 16px;color:#9aa0a6;text-align:center;gap:10px}
+.empty-state svg{width:42px;height:42px;opacity:.3}
+.text-muted{color:#9aa0a6}.text-accent{color:#d4a017}.text-danger{color:#c0392b}.text-twist{color:#8e44ad}.text-ok{color:#27ae60}
+.divider{height:1px;background:#2e3440;margin:12px 0}
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 16l5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-fingerprint" viewBox="0 0 24 24"><path d="M12 2C7 2 3 6 3 11c0 3 1 5 2 7M12 2c5 0 9 4 9 9 0 3-1 5-2 7M12 6c-3 0-5 2.5-5 6 0 2 .5 3.5 1 5M12 6c3 0 5 2.5 5 6 0 2-.5 3.5-1 5M12 10c-1 0-2 1-2 3M12 10c1 0 2 1 2 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12c0 4-4 7-9 7-1.5 0-3-.3-4.2-.9L3 20l1.5-4C3.3 14.7 3 13.4 3 12c0-4 4-7 9-7s9 3 9 7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 012-2h4l2 2h8a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 11l8-8M17 6l2 2M15 8l2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 11V7a4 4 0 018 0v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v5l3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-knife" viewBox="0 0 24 24"><path d="M5 19L15 9l4-4c1-1 1-3 0-3s-2 0-3 1L5 19l-1 2 2-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-poison" viewBox="0 0 24 24"><path d="M9 3h6v3l3 5v8a2 2 0 01-2 2H8a2 2 0 01-2-2v-8l3-5V3zM9 3h6M8 14h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-footprint" viewBox="0 0 24 24"><ellipse cx="9" cy="14" rx="4" ry="6" fill="none" stroke="currentColor" stroke-width="1.5" transform="rotate(-10 9 14)"/><circle cx="7" cy="5" r="1.5" fill="currentColor"/><circle cx="10" cy="4" r="1.5" fill="currentColor"/><circle cx="13" cy="5" r="1.5" fill="currentColor"/></symbol>
+<symbol id="i-blood" viewBox="0 0 24 24"><path d="M12 3C8 8 5 12 5 15.5 5 19.6 8.1 22 12 22s7-2.4 7-6.5C19 12 16 8 12 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-umbrella" viewBox="0 0 24 24"><path d="M3 13a9 9 0 0118 0H3zM12 13v6a2 2 0 01-2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-wine" viewBox="0 0 24 24"><path d="M8 2h8l-1 7c-.3 2-1.5 3-3 3s-2.7-1-3-3L8 2zM12 12v7M8 22h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 18h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-letter" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="9" cy="11" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M21 16l-5-5-8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-suitcase" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 8V5a1 1 0 011-1h4a1 1 0 011 1v3M3 14h18" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 8h18v8H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="3" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="21" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 8v8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h18v11H3zM8 8l1-3h6l1 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="14" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-star-f" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 21h6M10 17h4M12 3a6 6 0 00-4 10.5V16h8v-2.5A6 6 0 0012 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-gavel" viewBox="0 0 24 24"><path d="M14 3l7 7-3 3-7-7 3-3zM11 6L3 14l2 2 8-8M3 21h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-door" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/></symbol>
+<symbol id="i-window" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 12h16M12 4v16" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18V7M21 18V7M3 12h18v6H3zM3 7h8v5H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-desk" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 12v7M19 12v7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-bookshelf" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 10h16M4 17h16M8 3v7M14 10v7" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-fireplace" viewBox="0 0 24 24"><path d="M4 20h16V10L12 4 4 10v10zM8 13v7h8v-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 13c-1 2 0 3 1 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-couch" viewBox="0 0 24 24"><path d="M4 14v4h16v-4M4 14c0-2 1-3 3-3h10c2 0 3 1 3 3M6 18v2M18 18v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-counter" viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 14v5M19 14v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-frame" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="6" width="12" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-display" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-vent" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 9h16M4 14h16M4 19h16" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-money" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 2h6v4H9zM9 10h6M9 14h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2V6zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-timeline" viewBox="0 0 24 24"><circle cx="4" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="20" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 12h4M14 12h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-exclaim" viewBox="0 0 24 24"><path d="M12 3v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v5c0 5.5-3.8 10-8 11-4.2-1-8-5.5-8-11V6l8-4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<div id="app"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:#9aa0a6;text-align:center;padding:32px"><div style="font-size:18px;color:#d4a017">迷案卷宗</div><div>正在加载，请稍候…</div><div style="font-size:12px">若长时间无响应，请尝试使用 Edge 或 Chrome 浏览器打开</div></div></div>
+<noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0f1115;color:#e8e6e3;text-align:center;padding:32px;z-index:999"><div><div style="font-size:20px;color:#d4a017;margin-bottom:12px">迷案卷宗</div><div>请启用 JavaScript 以运行游戏</div></div></div></noscript>
+<div id="toasts"></div>
+<div class="twist-ov" id="twist-ov"><div class="twist-pulse"></div><div class="twist-text" id="twist-text"></div><button class="twist-skip" id="twist-skip">点击继续</button></div>
+<div class="modal-ov" id="modal-ov"><div class="modal" id="modal-box"></div></div>
+<script>
+/* ===== DATA ===== */
+const IC={search:'i-search',fingerprint:'i-fingerprint',chat:'i-chat',folder:'i-folder',key:'i-key',lock:'i-lock',clock:'i-clock',person:'i-person',knife:'i-knife',poison:'i-poison',footprint:'i-footprint',blood:'i-blood',umbrella:'i-umbrella',wine:'i-wine',phone:'i-phone',letter:'i-letter',photo:'i-photo',suitcase:'i-suitcase',ticket:'i-ticket',camera:'i-camera',door:'i-door',window:'i-window',bed:'i-bed',desk:'i-desk',bookshelf:'i-bookshelf',fireplace:'i-fireplace',couch:'i-couch',counter:'i-counter',frame:'i-frame',display:'i-display',vent:'i-vent',money:'i-money',clipboard:'i-clipboard'};
+const CC={物证:'badge-ev',口供:'badge-te',文件:'badge-do',推理:'badge-re'};
+function S(i,w=24){return`<svg width="${w}" height="${w}"><use href="#${i}"/></svg>`}
+
+const CASES=[
+/* CASE 001 */
+{id:'c1',num:'001',name:'雨夜山庄',diff:'入门',brief:'山庄主人陈伯年死在反锁书房中，雨夜掩盖了一切痕迹。',
+briefing:'暴雨之夜，你接到报案赶往陈家山庄。山庄主人陈伯年被人发现死于书房，房门从内侧反锁，窗户半开。书桌上摊着一份刚修改的遗嘱。四位在场者各怀心事……',
+scenes:[
+{id:'study',name:'书房',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:35,y:10,w:30,h:16,l:'书桌'},{x:5,y:55,w:18,h:30,l:'书架'},{x:75,y:50,w:18,h:18,l:'壁炉'},{x:70,y:82,w:22,h:10,l:'窗户'}]},
+hotspots:[
+{id:'h1',x:50,y:42,ic:'person',name:'尸体',desc:'陈伯年趴在书桌上，背部插着裁纸刀。死亡时间约昨晚10点。',clues:['c1_01']},
+{id:'h2',x:50,y:18,ic:'desk',name:'书桌',desc:'遗嘱将全部遗产捐赠慈善机构，墨迹未干。',clues:['c1_02']},
+{id:'h3',x:82,y:84,ic:'window',name:'窗户',desc:'窗户半开，窗台有泥水但外侧无攀爬痕迹。',clues:['c1_03']},
+{id:'h4',x:14,y:68,ic:'bookshelf',name:'书架',desc:'一本书放反了——推动后书架移开，露出密道入口！',clues:['c1_04']},
+{id:'h5',x:82,y:58,ic:'fireplace',name:'壁炉',desc:'灰烬中找到一枚铜纽扣，刻着"周"字。',clues:['c1_05']},
+{id:'h6',x:14,y:38,ic:'key',name:'密道入口',desc:'密道通向花园。地上有皮鞋脚印(40码)和另一枚"周"字纽扣。',clues:['c1_06','c1_07'],requires:'c1_04'}
+]},
+{id:'hall',name:'大厅',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:28,y:30,w:40,h:22,l:'沙发'},{x:68,y:8,w:24,h:14,l:'柜台'}]},
+hotspots:[
+{id:'h7',x:48,y:40,ic:'couch',name:'沙发区',desc:'茶几上四个茶杯，其中一杯有苦杏仁味。',clues:[]},
+{id:'h8',x:10,y:14,ic:'umbrella',name:'雨伞架',desc:'三把伞：陈伯年、陈晓(标"晓")、林默(标"林")。阿强的伞不在。',clues:['c1_08']},
+{id:'h9',x:78,y:14,ic:'counter',name:'前台',desc:'访客记录：阿强20:30进入花园区域。',clues:['c1_09']}
+]},
+{id:'garden',name:'花园',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:8,y:8,w:25,h:20,l:'花圃'},{x:58,y:12,w:30,h:18,l:'工具棚'}]},
+hotspots:[
+{id:'h10',x:50,y:42,ic:'footprint',name:'泥地',desc:'脚印40码，比阿强42码小。深浅均匀像伪造的。',clues:['c1_10']},
+{id:'h11',x:70,y:20,ic:'key',name:'工具棚',desc:'修枝剪不见了。角落有湿外套，口袋里一张当票。',clues:['c1_11']},
+{id:'h12',x:14,y:82,ic:'door',name:'密道出口',desc:'灌木丛后密道出口，有新鲜翻土痕迹。',clues:['c1_12'],requires:'c1_04'}
+]},
+{id:'kitchen',name:'厨房',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:8,y:8,w:80,h:14,l:'灶台'},{x:58,y:42,w:30,h:18,l:'储物柜'}]},
+hotspots:[
+{id:'h13',x:28,y:46,ic:'wine',name:'茶壶',desc:'灶台上温着的茶壶，茶渣被翻动过。',clues:[]},
+{id:'h14',x:78,y:14,ic:'folder',name:'垃圾桶',desc:'撕碎的信：陈晓欠赌债200万，"叔叔答应改遗嘱帮我还债"。',clues:['c1_13']}
+]}
+],
+suspects:[
+{id:'zhou',name:'周德明',role:'管家·服务30年',
+dlgs:[
+{t:'昨晚我在厨房收拾到十一点，然后回房休息。陈老爷在书房处理遗嘱。',r:[]},
+{t:'阿强八点半来的，在花园转了一圈就走了。',r:[]},
+{q:'关于书房结构你了解多少？',req:null,a:'书架上的书是老爷珍藏的，平时不许别人碰。窗户有时开着通风。',r:[]},
+{q:'壁炉里刻"周"的纽扣怎么解释？',req:'c1_05',a:'这……一定是前几天打扫时掉的。对，就是这样。',r:[],c:true},
+{q:'密道的事你知道吗？',req:'c1_04',a:'密道！？我不知道什么密道……',r:['c1_14'],c:true},
+{q:'你其实姓李，是李氏家族的后人？',req:'c1_06',a:'……是，我本名李德明。三十年前李家败落，改名来到陈家。老爷一直知道。',r:['c1_15']},
+{q:'是你通过密道杀了陈伯年，嫁祸阿强。',req:'c1_07',ev:'c1_07',a:'……是我。但不是我自己想做的！是陈晓指使我！她说如果遗嘱改了她什么都拿不到！',r:['c1_16']}
+]},
+{id:'xiao',name:'陈晓',role:'侄女·唯一亲属',
+dlgs:[
+{t:'叔叔身体不好。昨晚我在房间看书，什么都没听到。',r:[]},
+{q:'你的经济状况？',req:null,a:'还行，没什么大问题。',r:[]},
+{q:'厨房的信——你欠了200万赌债？',req:'c1_13',a:'那是以前的事！叔叔答应帮我才要改遗嘱把钱留给我。',r:['c1_17']},
+{q:'管家承认是你指使的。',req:'c1_16',ev:'c1_16',a:'他胡说！我只是让他帮看遗嘱……没让他杀人！',r:['c1_18']}
+]},
+{id:'lin',name:'林默',role:'家庭医生',
+dlgs:[
+{t:'昨晚九点做完检查就离开了。陈伯年血压偏高。',r:[]},
+{q:'茶几上有杯茶散发苦杏仁味。',req:'c1_01',a:'苦杏仁味可能是氰化物。但陈伯年是刀伤致死……也许有人先下毒但没成功？',r:['c1_19']}
+]},
+{id:'qiang',name:'阿强',role:'园丁',
+dlgs:[
+{t:'我八点半来花园检查就回家了，住花园外小屋。',r:[]},
+{q:'泥地脚印不是你的，比你小。',req:'c1_10',a:'我就说不是我！我穿42码，那脚印最多40。去查穿40码鞋的人！',r:['c1_20']},
+{q:'工具棚少了的修枝剪和当票？',req:'c1_11',a:'修枝剪前天还在用就不见了。当票是我的，最近手头紧。',r:[]}
+]}
+],
+clues:[
+{id:'c1_01',n:'致命刀伤',d:'裁纸刀从右后方刺入伤及心脏，凶手右手持刀。',cat:'物证'},
+{id:'c1_02',n:'遗嘱墨迹',d:'遗嘱将全部遗产捐赠，墨迹未干，修改时间在案发前不久。',cat:'物证'},
+{id:'c1_03',n:'窗台痕迹',d:'窗台有泥水但外侧无攀爬痕迹，窗户从内侧打开。',cat:'物证'},
+{id:'c1_04',n:'书架密道',d:'书架后隐藏密道通向花园，足够成年人侧身通过。',cat:'物证'},
+{id:'c1_05',n:'壁炉纽扣',d:'铜纽扣刻"周"字，较新，脱落时间不久。',cat:'物证'},
+{id:'c1_06',n:'密道脚印',d:'密道内皮鞋脚印40码，从花园端通向书房端。',cat:'物证'},
+{id:'c1_07',n:'密道纽扣',d:'密道刮擦处第二枚"周"字纽扣，与壁炉那枚一致。',cat:'物证'},
+{id:'c1_08',n:'雨伞架',d:'三把伞分属陈伯年、陈晓、林默。阿强的伞不在。',cat:'物证'},
+{id:'c1_09',n:'访客记录',d:'阿强20:30进入花园，林默21:00离开。',cat:'文件'},
+{id:'c1_10',n:'伪造脚印',d:'脚印40码与阿强42码不符，深浅均匀像刻意伪造。',cat:'推理'},
+{id:'c1_11',n:'当票',d:'阿强的当票，近期当了手表，经济困难但与案件无关。',cat:'文件'},
+{id:'c1_12',n:'密道出口',d:'花园密道出口有新鲜翻土痕迹。',cat:'物证'},
+{id:'c1_13',n:'债务信件',d:'陈晓欠赌债200万，"叔叔答应改遗嘱帮我还债"。',cat:'文件'},
+{id:'c1_14',n:'管家撒谎',d:'管家称不知密道，但30年老管家不可能不知道书架异常。',cat:'推理'},
+{id:'c1_15',n:'管家真身',d:'周德明本名李德明，李氏家族后人，三十年前改名入陈家。',cat:'文件'},
+{id:'c1_16',n:'管家认罪',d:'周德明承认通过密道杀人，但声称受陈晓指使。',cat:'口供'},
+{id:'c1_17',n:'陈晓动机',d:'陈晓欠巨额赌债，依赖遗产还债，有强烈杀人动机。',cat:'推理'},
+{id:'c1_18',n:'陈晓辩解',d:'陈晓承认找过管家但否认指使杀人。',cat:'口供'},
+{id:'c1_19',n:'毒茶疑云',d:'茶几上有杯茶可能含氰化物，但陈伯年是刀伤致死。',cat:'推理'},
+{id:'c1_20',n:'阿强清白',d:'脚印尺码不符且深浅均匀，阿强是被嫁祸的。',cat:'推理'}
+],
+timeline:{events:[
+{id:'t1',text:'晚宴结束众人回房',time:'20:00',order:0},
+{id:'t2',text:'阿强进入花园',time:'20:30',order:1},
+{id:'t3',text:'林默检查后离开',time:'21:00',order:2},
+{id:'t4',text:'陈伯年修改遗嘱',time:'21:30',order:3},
+{id:'t5',text:'凶手通过密道行凶',time:'22:00',order:4},
+{id:'t6',text:'管家发现尸体报警',time:'23:00',order:5}
+]},
+synthesis:[
+{input:['c1_05','c1_07'],output:'c1_14',text:'两枚纽扣证明管家使用了密道。'},
+{input:['c1_03','c1_10'],output:'c1_20',text:'窗台无攀爬痕迹加脚印不符，现场是伪造的。'},
+{input:['c1_02','c1_13'],output:'c1_17',text:'遗嘱全部捐赠加陈晓欠债，她有强烈动机。'}
+],
+accusation:{suspect:'zhou',evidence:['c1_04','c1_07','c1_16'],summary:'管家周德明通过密道进入书房杀害陈伯年，伪造脚印嫁祸阿强。'},
+twist:{text:'等等……管家的认罪来得太顺利了。如果他只是棋子，那真正的幕后黑手……还在暗处微笑。',
+contras:[
+{text:'管家称"不知密道"，但30年老管家不可能不知道。他隐瞒的不只是密道——他在保护某人。',ev:'c1_14'},
+{text:'陈晓说"只是让管家看遗嘱"，但她烧毁了借据——毁灭自己的动机证据。主谋不会只"看看"。',ev:'c1_13'},
+{text:'管家认罪措辞太流畅，像事先准备好的说辞。真正的教唆者正利用他的忠诚保护自己。',ev:'c1_18'}
+]},
+endings:{surface:{title:'表面真相',desc:'园丁阿强被认定为凶手。案件似乎水落石出……但有些细节不太对劲。',stars:1},
+true_end:{title:'管家的忠诚',desc:'管家周德明是行凶者，利用密道进出书房。但他为何甘愿认罪？"我答应过李家……守护最后的血脉。"陈晓才是利用管家忠诚的人。',stars:2},
+perfect:{title:'幕后主谋',desc:'陈晓利用管家对李家的情感操控他杀人。她精心策划了一切，甚至准备好管家的"认罪说辞"。法律不会因忠诚而网开一面。',stars:3}}
+},
+/* CASE 002 */
+{id:'c2',num:'002',name:'画廊密室',diff:'进阶',brief:'画廊老板在反锁密室中毒身亡，门窗完好，毒从何来？',
+briefing:'墨风画廊发生命案。老板陈风死在地下密室，门窗从内侧反锁。死者面容扭曲，初步判断为中毒。四位与画廊关系密切的人各有秘密……',
+scenes:[
+{id:'gallery',name:'展厅',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:5,y:12,w:3,h:30,l:'画作'},{x:92,y:12,w:3,h:30,l:'画作'},{x:32,y:38,w:32,h:18,l:'展台'}]},
+hotspots:[
+{id:'h1',x:8,y:28,ic:'frame',name:'主展画作',desc:'《暮色》画框背板移位，背面有化学气味。',clues:['c2_01']},
+{id:'h2',x:48,y:45,ic:'display',name:'展台',desc:'签到簿显示四位嫌疑人当天下午都到场。',clues:['c2_02']},
+{id:'h3',x:75,y:72,ic:'wine',name:'酒柜',desc:'酒杯有残留液体，苦杏仁味。杯上有小薇指纹。',clues:['c2_03']}
+]},
+{id:'vault',name:'密室',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:32,y:32,w:32,h:18,l:'办公桌'},{x:5,y:8,w:14,h:14,l:'保险柜'},{x:74,y:8,w:16,h:12,l:'通风口'}]},
+hotspots:[
+{id:'h4',x:48,y:52,ic:'person',name:'死者',desc:'陈风倒在桌旁，嘴唇发紫。桌上半杯红酒。氰化物中毒。',clues:['c2_04']},
+{id:'h5',x:48,y:92,ic:'lock',name:'反锁的门',desc:'门从内侧插销锁住，窗户也锁好。唯一开口是通风管道。',clues:['c2_05']},
+{id:'h6',x:80,y:14,ic:'vent',name:'通风管道',desc:'管道连接储藏室，内壁有化学残留和苦杏仁味。',clues:['c2_06']},
+{id:'h7',x:48,y:38,ic:'wine',name:'桌上的酒',desc:'红酒含氰化物，但杯缘化学气味比酒液更浓。',clues:['c2_07']}
+]},
+{id:'storage',name:'储藏室',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:8,y:8,w:28,h:22,l:'颜料架'},{x:52,y:8,w:34,h:18,l:'材料柜'}]},
+hotspots:[
+{id:'h8',x:22,y:18,ic:'poison',name:'化学溶剂',desc:'"氰化固定剂"被使用过，液面下降。含挥发性氰化物。',clues:['c2_08']},
+{id:'h9',x:66,y:16,ic:'letter',name:'购买记录',desc:'两周前购买氰化固定剂的收据，签名"许墨"。',clues:['c2_09']},
+{id:'h10',x:48,y:64,ic:'vent',name:'通风管道口',desc:'管道口有拆装痕迹，内壁涂有淡黄色物质——与氰化固定剂一致。',clues:['c2_10']}
+]},
+{id:'office',name:'办公室',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:22,y:18,w:50,h:22,l:'办公桌'},{x:8,y:55,w:24,h:22,l:'文件柜'}]},
+hotspots:[
+{id:'h11',x:48,y:26,ic:'display',name:'电脑',desc:'未发送邮件："许墨用廉价颜料冒充高端材料，涉及超500万……"',clues:['c2_11']},
+{id:'h12',x:20,y:64,ic:'key',name:'文件柜',desc:'赵衡的信："你毁了我的画，这笔账我记着。"',clues:['c2_12']},
+{id:'h13',x:80,y:8,ic:'camera',name:'监控',desc:'存储卡被取出。走廊监控：20:05许墨、20:10方远去走廊方向。',clues:['c2_13']}
+]}
+],
+suspects:[
+{id:'fang',name:'方远',role:'策展人·合伙人',
+dlgs:[
+{t:'预展后我在一楼整理清单。陈风在地下密室会客。',r:[]},
+{q:'预展有什么异常？',req:null,a:'许墨中途离开约20分钟说去储藏室。小薇那段时间也不在展厅。',r:['c2_14']},
+{q:'陈风电脑里有关于许墨的邮件。',req:'c2_11',a:'陈风怀疑许墨用廉价颜料冒充高端材料，两人闹过矛盾。',r:['c2_15']},
+{q:'你说一直在展厅，但监控显示你20:10去了走廊。',req:'c2_13',a:'我……去上厕所了。',r:[],c:true}
+]},
+{id:'xu',name:'许墨',role:'驻场画家',
+dlgs:[
+{t:'我在预展展示了新作。结束后就回家了。',r:[]},
+{q:'你买了氰化固定剂？',req:'c2_09',a:'是，用来固定颜料的。美术用品店就能买到。',r:[]},
+{q:'你把固定剂涂在通风管道里，毒气进入密室。',req:'c2_10',ev:'c2_08',a:'……是我做的。但酒里也有毒——是小薇加的！',r:['c2_16']},
+{q:'你利用了小薇？',req:'c2_16',a:'小薇以为加的是安眠药。真正的毒是通过管道进去的。我才是设计者。',r:['c2_17']}
+]},
+{id:'zhao',name:'赵衡',role:'收藏家',
+dlgs:[
+{t:'我来买画。和陈风谈了价格就离开了。',r:[]},
+{q:'你的信——"你毁了我的画"？',req:'c2_12',a:'陈风三年前当众毁了我收藏的画，花了两百万。我恨他但没杀他。',r:['c2_18']},
+{q:'你知道毒怎么进入密室的？',req:'c2_06',a:'……我看到许墨从储藏室出来，手拿着刷子，身上有化学品味。我猜到了但沉默了。',r:['c2_19']},
+{q:'你为什么不阻止？',req:'c2_19',a:'陈风死有余辜！我没参与，只是没阻止。',r:['c2_20']}
+]},
+{id:'wei',name:'小薇',role:'助理',
+dlgs:[
+{t:'我负责接待和倒酒。结束后帮陈风收拾。',r:[]},
+{q:'酒里有氰化物，杯上只有你的指纹。',req:'c2_03',a:'我只加了安眠药！想让他睡着偷合同证据。没有下毒！',r:['c2_21']},
+{q:'你确定没下氰化物？',req:'c2_21',a:'确定！毒可能不是从酒里来的！',r:['c2_22']}
+]}
+],
+clues:[
+{id:'c2_01',n:'画框异味',d:'画框背面有化学气味，背板被移动过。',cat:'物证'},
+{id:'c2_02',n:'签到簿',d:'方远18:00、许墨18:30、赵衡19:00、小薇17:30。陈风19:30进密室。',cat:'文件'},
+{id:'c2_03',n:'毒酒杯',d:'酒含氰化物，但杯缘化学气味浓度高于酒液。',cat:'物证'},
+{id:'c2_04',n:'死者症状',d:'嘴唇发紫，氰化物中毒。死亡时间20:00-21:00。',cat:'物证'},
+{id:'c2_05',n:'密室构造',d:'门窗都从内侧锁好，唯一开口是通风管道。',cat:'物证'},
+{id:'c2_06',n:'通风管道',d:'管道连接密室和储藏室，内壁有化学残留。',cat:'物证'},
+{id:'c2_07',n:'酒中氰化物',d:'酒含氰化物，但杯缘气味更浓，毒物可能不是直接加入酒中。',cat:'物证'},
+{id:'c2_08',n:'氰化固定剂',d:'含挥发性氰化物的溶剂，被使用过。',cat:'物证'},
+{id:'c2_09',n:'购买收据',d:'两周前购买记录，签名"许墨"。',cat:'文件'},
+{id:'c2_10',n:'管道涂层',d:'储藏室端管道内壁涂有氰化固定剂。',cat:'物证'},
+{id:'c2_11',n:'未发送邮件',d:'陈风发现许墨用廉价颜料冒充高端材料，涉超500万。',cat:'文件'},
+{id:'c2_12',n:'赵衡的恨',d:'赵衡恨陈风当众毁了他价值两百万的画。',cat:'文件'},
+{id:'c2_13',n:'监控记录',d:'存储卡被取出。20:05许墨、20:10方远去走廊方向。',cat:'文件'},
+{id:'c2_14',n:'时间矛盾',d:'许墨和方远案发时间都有空档。',cat:'推理'},
+{id:'c2_15',n:'颜料造假',d:'许墨被陈风发现造假，面临巨额赔偿。',cat:'推理'},
+{id:'c2_16',n:'许墨认罪',d:'许墨承认涂毒在管道内，但声称小薇也下了毒。',cat:'口供'},
+{id:'c2_17',n:'利用小薇',d:'小薇以为加安眠药，许墨利用她做掩护。',cat:'推理'},
+{id:'c2_18',n:'赵衡仇恨',d:'赵衡恨陈风毁画，但声称只是记恨。',cat:'口供'},
+{id:'c2_19',n:'赵衡沉默',d:'赵衡看到许墨涂毒但选择沉默。',cat:'口供'},
+{id:'c2_20',n:'共谋沉默',d:'赵衡知情不报，是沉默的共谋者。',cat:'推理'},
+{id:'c2_21',n:'小薇安眠药',d:'小薇承认加安眠药想偷证据，坚称没下氰化物。',cat:'口供'},
+{id:'c2_22',n:'毒物来源',d:'小薇没下氰化物，毒是通过通风管道进入的。',cat:'推理'}
+],
+timeline:{events:[
+{id:'t1',text:'小薇到场准备',time:'17:30',order:0},
+{id:'t2',text:'方远到场',time:'18:00',order:1},
+{id:'t3',text:'许墨到场',time:'18:30',order:2},
+{id:'t4',text:'赵衡到场',time:'19:00',order:3},
+{id:'t5',text:'陈风进入密室',time:'19:30',order:4},
+{id:'t6',text:'许墨去涂毒',time:'20:05',order:5},
+{id:'t7',text:'毒气进入密室',time:'20:15',order:6},
+{id:'t8',text:'陈风中毒身亡',time:'20:30',order:7}
+]},
+synthesis:[
+{input:['c2_08','c2_10'],output:'c2_17',text:'固定剂涂在管道内，毒气挥发进入密室——密室杀人手法。'},
+{input:['c2_09','c2_13'],output:'c2_15',text:'许墨提前买毒，案发时去了储藏室。'},
+{input:['c2_19','c2_18'],output:'c2_20',text:'赵衡知情不报，是沉默的共谋者。'}
+],
+accusation:{suspect:'xu',evidence:['c2_06','c2_10','c2_16'],summary:'画家许墨将氰化固定剂涂在通风管道内，毒气挥发进入反锁密室。'},
+twist:{text:'密室谜底揭开了，但故事还没结束。许墨的手法精妙，可是……谁在明知真相时选择了沉默？',
+contras:[
+{text:'许墨说"小薇也下了毒"，但小薇只加了安眠药。杯缘氰化物是许墨事先涂的——双重保险。',ev:'c2_03'},
+{text:'赵衡19:45就去了储藏室方向，比许墨还早。他不是"碰巧看到"，而是"事先知情"。',ev:'c2_19'},
+{text:'监控存储卡被取走。赵衡有时间取卡——他不仅知情还帮毁灭证据。',ev:'c2_13'}
+]},
+endings:{surface:{title:'密室之谜',desc:'助理小薇被认定在酒中下毒。但密室的真正秘密还隐藏在通风管道中。',stars:1},
+true_end:{title:'画家的毒笔',desc:'许墨是密室杀人设计者。氰化固定剂涂在管道内，毒气缓慢挥发。小薇只是被利用的道具。',stars:2},
+perfect:{title:'沉默的共谋',desc:'许墨是凶手，赵衡让计划万无一失。赵衡事先知情还帮取走监控卡。正义或许迟到，真相永远不会被颜料覆盖。',stars:3}}
+},
+/* CASE 003 */
+{id:'c3',num:'003',name:'列车消失的乘客',diff:'烧脑',brief:'行驶列车上乘客在反锁包厢中消失，后被发现死于行李车厢。',
+briefing:'K1024次列车上，5号包厢乘客钱志明失踪，包厢门从内侧反锁。两小时后行李车厢发现一具面容相似但指纹不匹配的尸体。而你收到的委托信……又是怎么回事？',
+scenes:[
+{id:'cabin',name:'5号包厢',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:8,y:12,w:34,h:18,l:'上铺'},{x:8,y:52,w:34,h:18,l:'下铺'},{x:58,y:18,w:30,h:14,l:'小桌'}]},
+hotspots:[
+{id:'h1',x:48,y:92,ic:'lock',name:'反锁的门',desc:'安全链从内侧锁住，链条完好。人是怎么消失的？',clues:['c3_01']},
+{id:'h2',x:84,y:38,ic:'window',name:'车窗',desc:'车窗有刮擦痕迹，但行驶中车窗密封无法打开。',clues:['c3_02']},
+{id:'h3',x:70,y:24,ic:'desk',name:'小桌',desc:'半张撕碎车票（名字"钱志明"，座位号不匹配）。',clues:['c3_03']},
+{id:'h4',x:24,y:58,ic:'bed',name:'下铺',desc:'枕头下名片"钱志明 远通贸易"。床垫有陌生纤维。',clues:['c3_04']}
+]},
+{id:'luggage',name:'行李车厢',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:4,y:8,w:18,h:55,l:'货架A'},{x:56,y:8,w:32,h:35,l:'行李箱区'}]},
+hotspots:[
+{id:'h5',x:48,y:62,ic:'person',name:'尸体',desc:'死者面容像钱志明但指纹不匹配。头部遭钝器打击。衣服尺码不同。',clues:['c3_05']},
+{id:'h6',x:32,y:38,ic:'blood',name:'搏斗痕迹',desc:'货架间有搏斗痕迹，血迹和拖拽痕。',clues:['c3_06']},
+{id:'h7',x:70,y:22,ic:'suitcase',name:'行李箱',desc:'行李箱里有假护照，照片是死者但名字"孙伟"。',clues:['c3_07']}
+]},
+{id:'dining',name:'餐车',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:8,y:28,w:82,h:10,l:'吧台'},{x:12,y:52,w:24,h:18,l:'桌1'},{x:52,y:52,w:24,h:18,l:'桌2'}]},
+hotspots:[
+{id:'h8',x:48,y:34,ic:'counter',name:'吧台',desc:'服务员记得：19:50刘雅拍照发朋友圈。19:55王鹏离开。',clues:['c3_08']},
+{id:'h9',x:22,y:58,ic:'photo',name:'照片',desc:'刘雅朋友圈照片背景时钟19:50——不在场证明。',clues:['c3_09']},
+{id:'h10',x:62,y:58,ic:'person',name:'邻座孙浩',desc:'孙浩看到"钱志明"走过走廊——但步态不同。',clues:['c3_10']}
+]},
+{id:'staff',name:'列车员室',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:18,y:12,w:58,h:18,l:'办公桌'},{x:8,y:52,w:28,h:22,l:'储物柜'},{x:58,y:52,w:28,h:22,l:'监控屏'}]},
+hotspots:[
+{id:'h11',x:48,y:20,ic:'clipboard',name:'值班表',desc:'王鹏19:55就签了"已巡视"，比规定早5分钟。',clues:['c3_11']},
+{id:'h12',x:20,y:60,ic:'money',name:'储物柜',desc:'5000元现金和纸条："7:55离开岗位，不要问为什么。"',clues:['c3_12']},
+{id:'h13',x:70,y:60,ic:'camera',name:'监控',desc:'20:10一人走向行李车厢，身形像钱志明但步态不同。',clues:['c3_13']}
+]}
+],
+suspects:[
+{id:'wang',name:'王鹏',role:'列车员',
+dlgs:[
+{t:'我按正常时间巡视，七点五十五分巡完5号车厢。',r:[]},
+{q:'值班记录显示你19:55就签了"已巡视"。',req:'c3_11',a:'我记错时间了，提前签了一下。',r:[],c:true},
+{q:'储物柜里的5000元和纸条？',req:'c3_12',a:'有人给的小费，让我离开岗位一下。',r:['c3_14']},
+{q:'谁给你的钱？',req:'c3_14',a:'戴帽子的人，在餐车给的。声音像生意人。',r:['c3_15']}
+]},
+{id:'sun',name:'孙浩',role:'邻座乘客',
+dlgs:[
+{t:'餐车吃完晚饭就回包厢了。九点左右听到走廊有人走过。',r:[]},
+{q:'你说看到"钱志明"走过，但他应该在反锁包厢里。',req:'c3_10',a:'也许看错了。穿着像但走路姿势不同。',r:['c3_16']},
+{q:'你是钱志明安排的人，制造"他还活着"的假象。',req:'c3_16',ev:'c3_10',a:'……有人给钱让我特定时间说看到"钱志明"。',r:['c3_17']}
+]},
+{id:'liu',name:'刘雅',role:'前妻',
+dlgs:[
+{t:'我和钱志明离婚两年了。昨晚一直在餐车。',r:[]},
+{q:'离婚原因？',req:null,a:'他生意亏钱情绪差，经常吵架。离婚后变得偏执。',r:['c3_18']},
+{q:'钱志明买了高额意外险，受益人是你。',req:'c3_20',a:'我不知道……他说过"让你得到应有的补偿"。',r:['c3_19']}
+]},
+{id:'qian',name:'钱志明',role:'失踪乘客',
+dlgs:[
+{t:'（此人失踪。最近生意失败。）',r:[]},
+{q:'死者指纹与钱志明不匹配。',req:'c3_05',a:'（推理）死者不是钱志明。他可能还活着或策划了假死。',r:['c3_21']},
+{q:'钱志明案发前一个月买了高额意外险。',req:'c3_20',a:'（推理）生意失败+突然买保险=骗保。',r:['c3_22']},
+{q:'委托信邮戳和钱志明公司地址一致。',req:'c3_23',a:'（最终推理）委托信是钱志明寄的。你从一开始就是棋子。',r:['c3_24']}
+]}
+],
+clues:[
+{id:'c3_01',n:'反锁包厢',d:'安全链从内侧锁住且完好。',cat:'物证'},
+{id:'c3_02',n:'车窗刮痕',d:'车窗内侧有工具刮痕。',cat:'物证'},
+{id:'c3_03',n:'撕碎车票',d:'半张车票座位号与5号包厢不匹配。',cat:'物证'},
+{id:'c3_04',n:'陌生纤维',d:'下铺纤维与死者外套材质一致。',cat:'物证'},
+{id:'c3_05',n:'身份不符',d:'死者指纹与钱志明不匹配，假护照名"孙伟"。',cat:'物证'},
+{id:'c3_06',n:'搏斗痕迹',d:'行李车厢有搏斗、血迹和拖拽痕。',cat:'物证'},
+{id:'c3_07',n:'假护照',d:'死者假护照名"孙伟"——是替身。',cat:'物证'},
+{id:'c3_08',n:'服务员证词',d:'19:50刘雅拍照，19:55王鹏离开。',cat:'口供'},
+{id:'c3_09',n:'不在场证明',d:'刘雅19:50朋友圈照片证明她在餐车。',cat:'推理'},
+{id:'c3_10',n:'走廊目击',d:'孙浩看到"钱志明"走过但步态不符。',cat:'口供'},
+{id:'c3_11',n:'值班记录',d:'王鹏19:55提前签了巡视记录。',cat:'文件'},
+{id:'c3_12',n:'收买证据',d:'5000元和纸条："7:55离开岗位"。',cat:'物证'},
+{id:'c3_13',n:'走廊监控',d:'20:10一人走向行李车厢，步态与钱志明不同。',cat:'文件'},
+{id:'c3_14',n:'王鹏被收买',d:'王鹏承认收钱离开岗位。',cat:'口供'},
+{id:'c3_15',n:'神秘委托人',d:'给钱的是"声音像生意人"的戴帽男子。',cat:'推理'},
+{id:'c3_16',n:'孙浩撒谎',d:'孙浩承认收钱在特定时间说看到"钱志明"。',cat:'口供'},
+{id:'c3_17',n:'制造假象',d:'有人安排孙浩制造"钱志明还活着"的假象。',cat:'推理'},
+{id:'c3_18',n:'离婚原因',d:'钱志明生意失败情绪偏执。',cat:'口供'},
+{id:'c3_19',n:'保险受益人',d:'高额意外险受益人是前妻刘雅。',cat:'文件'},
+{id:'c3_20',n:'高额保险',d:'钱志明案发前一个月买高额意外险。',cat:'文件'},
+{id:'c3_21',n:'替身之死',d:'死者是替身"孙伟"，不是钱志明。',cat:'推理'},
+{id:'c3_22',n:'骗保嫌疑',d:'生意失败+突然买保险=骗保。',cat:'推理'},
+{id:'c3_23',n:'委托信',d:'匿名委托信邮戳与钱志明公司地址一致。',cat:'文件'},
+{id:'c3_24',n:'侦探是棋子',d:'委托信是钱志明寄的。他需要你"证实"他的死亡。',cat:'推理'}
+],
+timeline:{events:[
+{id:'t1',text:'列车出发',time:'18:00',order:0},
+{id:'t2',text:'刘雅在餐车拍照',time:'19:50',order:1},
+{id:'t3',text:'王鹏被收买离岗',time:'19:55',order:2},
+{id:'t4',text:'替身被引至包厢',time:'20:00',order:3},
+{id:'t5',text:'"钱志明"走过走廊',time:'20:10',order:4},
+{id:'t6',text:'钱志明杀害替身',time:'20:15',order:5},
+{id:'t7',text:'制造密室假象',time:'20:30',order:6},
+{id:'t8',text:'尸体被发现',time:'22:00',order:7}
+]},
+synthesis:[
+{input:['c3_05','c3_07'],output:'c3_21',text:'指纹不符加假护照——死者是替身。'},
+{input:['c3_12','c3_16'],output:'c3_22',text:'王鹏和孙浩都被收买——精心策划的骗局。'},
+{input:['c3_20','c3_23'],output:'c3_24',text:'高额保险加委托信——钱志明策划了一切。'}
+],
+accusation:{suspect:'qian',evidence:['c3_05','c3_22','c3_24'],summary:'钱志明策划假死骗局，杀害替身伪装自己的死亡，目的是骗保。'},
+twist:{text:'你以为抓住了骗保者？钱志明为什么需要你当侦探？因为他不仅要骗保——还要让前妻背上杀人嫌疑。你的调查正按他写好的剧本走。',
+contras:[
+{text:'刘雅是保险受益人——如果钱志明"被杀"，刘雅既拿保险金又被怀疑。钱志明的计划是让前妻人财两空。',ev:'c3_19'},
+{text:'委托信让你来调查——你的推理结论会成为法庭证据。钱志明要你替他定罪前妻。',ev:'c3_23'},
+{text:'车窗刮痕是引导你发现"精心设计的痕迹"，走向钱志明预设的结论。',ev:'c3_02'}
+]},
+endings:{surface:{title:'前妻的复仇',desc:'刘雅被认定复仇杀人。但真正的棋手还在暗处微笑。',stars:1},
+true_end:{title:'消失的骗子',desc:'钱志明策划假死，杀害替身孙伟。他收买了列车员和孙浩。但他为什么要让你来调查？',stars:2},
+perfect:{title:'侦探的觉醒',desc:'钱志明不仅要骗保——要让前妻背杀人嫌疑。委托信是陷阱，你的推理会成为定罪刘雅的证据。但你看穿了这一切。钱志明计划败露，刘雅得以清白。你——不再是谁的棋子。',stars:3}}
+}
+];
+
+/* ===== STATE ===== */
+let G={screen:'menu',ci:-1,tab:'scene',clues:[],dlog:{},usedQ:{},tlPlace:{},synthDone:[],accSt:{},insight:3,hints:0,stars:{},ach:{},revFound:{},twist:false,selPool:null,selSynth:[0,null,null],synthSlot:1,evPick:false,curSc:0,inter:null,dlgLog:[],clueFilter:'全部',endType:null};
+function save(){try{localStorage.setItem('det_save',JSON.stringify({clues:G.clues,dlog:G.dlog,usedQ:G.usedQ,tlPlace:G.tlPlace,synthDone:G.synthDone,insight:G.insight,hints:G.hints,stars:G.stars,ach:G.ach,revFound:G.revFound,ci:G.ci,twist:G.twist,accSt:G.accSt,dlgLog:G.dlgLog,endType:G.endType,selSynth:G.selSynth,curSc:G.curSc,inter:G.inter,tab:G.tab}))}catch(e){}}
+function load(){try{let d=JSON.parse(localStorage.getItem('det_save'));if(d){Object.assign(G,d);return true}}catch(e){}return false}
+function hasSave(){try{return!!localStorage&&!!localStorage.getItem('det_save')}catch(e){return false}}
+function CC2(){return G.ci>=0?CASES[G.ci]:null}
+function hasClue(id){return G.clues.includes(id)}
+function addClue(id){if(!G.clues.includes(id)){G.clues.push(id);save();return true}return false}
+function caseClueCount(){let c=CC2();return c?G.clues.filter(id=>c.clues.find(x=>x.id===id)).length:0}
+function caseClueTotal(){let c=CC2();return c?c.clues.length:0}
+
+/* ===== UI HELPERS ===== */
+function toast(msg,type='clue'){
+  let el=document.createElement('div');el.className=`toast toast-${type}`;
+  el.innerHTML=`${S(type==='ok'?'i-check':type==='twist'?'i-exclaim':type==='warn'?'i-exclaim':'i-key',16)}<span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>{el.classList.add('hiding');setTimeout(()=>el.remove(),300)},2000);
+}
+function showModal(title,body,footer=''){
+  document.getElementById('modal-box').innerHTML=`<div class="modal-hdr"><span style="font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px">${title}</span><button class="modal-btn" onclick="closeModal()">${S('i-close',18)}</button></div><div class="modal-body">${body}</div>${footer?`<div class="modal-ftr">${footer}</div>`:''}`;
+  document.getElementById('modal-ov').classList.add('show');
+}
+function closeModal(){document.getElementById('modal-ov').classList.remove('show')}
+document.getElementById('modal-ov').addEventListener('click',e=>{if(e.target.id==='modal-ov')closeModal()});
+function showTwist(text,cb){
+  let ov=document.getElementById('twist-ov'),tx=document.getElementById('twist-text');
+  ov.classList.add('show');tx.textContent='';let i=0;
+  function t(){if(i<text.length){tx.textContent+=text[i];i++;setTimeout(t,80)}else{document.getElementById('twist-skip').onclick=()=>{ov.classList.remove('show');cb&&cb()}}}
+  t();
+}
+
+/* ===== RENDER ===== */
+const app=document.getElementById('app');
+function render(){
+  switch(G.screen){
+    case'menu':rMenu();break;case'cases':rCases();break;case'game':rGame();break;case'ending':rEnd();break;case'ach':rAch();break;
+  }
+}
+function rMenu(){
+  app.innerHTML=`<div class="screen active menu-screen">
+    <div style="color:#d4a017;margin-bottom:16px">${S('i-fingerprint',72)}</div>
+    <div class="menu-title">迷案卷宗</div>
+    <div class="menu-sub">你以为找到了真相，但真相不止一层</div>
+    <button class="menu-btn btn-p" onclick="startNew()">开始新游戏</button>
+    <button class="menu-btn btn-s" onclick="contGame()" ${hasSave()?'':'style="opacity:.4;pointer-events:none"'}>继续游戏</button>
+    <button class="menu-btn btn-g" onclick="G.screen='ach';render()">成就</button>
+  </div>`;
+}
+function rCases(){
+  let h=`<div class="screen active"><div class="top-bar"><button class="back-btn" onclick="G.screen='menu';render()">${S('i-arrow-l')}</button><span class="bar-title">选择案件</span></div><div class="content">`;
+  CASES.forEach((c,i)=>{
+    let st=G.stars[c.id]||0;
+    h+=`<div class="card" style="cursor:pointer" onclick="selCase(${i})">
+      <div style="font-size:11px;color:#d4a017;letter-spacing:2px;margin-bottom:3px">案件 ${c.num}</div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:4px">${c.name}</div>
+      <div style="font-size:13px;color:#9aa0a6;line-height:1.5;margin-bottom:8px">${c.brief}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="display:inline-flex;padding:2px 8px;border-radius:8px;font-size:11px;background:#252a35;color:#9aa0a6">${c.diff}</span>
+        <div style="display:flex;gap:3px">${[1,2,3].map(n=>`<span style="color:${n<=st?'#d4a017':'#2e3440'}">${S('i-star-f',16)}</span>`).join('')}</div>
+      </div></div>`;
+  });
+  h+=`</div></div>`;app.innerHTML=h;
+}
+function startNew(){G.screen='cases';render()}
+function contGame(){if(load()){G.screen='game';G.evPick=false;G.selPool=null;G.synthSlot=1;G.clueFilter='全部';render()}else toast('无存档','warn')}
+function selCase(i){
+  G.ci=i;G.clues=[];G.dlog={};G.usedQ={};G.tlPlace={};G.synthDone=[];G.accSt={};G.insight=3;G.hints=0;G.revFound={};G.twist=false;G.curSc=0;G.tab='scene';G.inter=null;G.dlgLog=[];G.clueFilter='全部';
+  save();G.screen='game';render();
+  setTimeout(()=>showModal(`${S('i-folder',18)} 案件简报`,`<p style="line-height:1.8">${CASES[i].briefing}</p>`,`<button class="modal-btn" onclick="closeModal()">开始调查</button>`),300);
+}
+function rGame(){
+  let c=CC2();if(!c)return;
+  let cn=caseClueCount(),ct=caseClueTotal();
+  let tabs=[{id:'scene',ic:'i-map',l:'场景'},{id:'suspect',ic:'i-users',l:'嫌疑人'},{id:'timeline',ic:'i-timeline',l:'时间线'},{id:'clues',ic:'i-clipboard',l:'线索'},{id:'accuse',ic:'i-gavel',l:'指认'}];
+  let rb=G.twist?`<div class="review-banner">${S('i-exclaim',16)} 卷宗重审模式 — 找出所有矛盾点</div>`:'';
+  let content='';
+  switch(G.tab){case'scene':content=rScene(c);break;case'suspect':content=rSuspects(c);break;case'timeline':content=rTimeline(c);break;case'clues':content=rClues(c);break;case'accuse':content=rAccuse(c);break;}
+  app.innerHTML=`<div class="screen active">
+    <div class="top-bar"><button class="back-btn" onclick="G.screen='cases';render()">${S('i-arrow-l')}</button><span class="bar-title">${c.num} · ${c.name}</span><div class="bar-status"><span class="insight">${S('i-bulb',14)}${G.insight}</span><span>${cn}/${ct}</span></div></div>
+    <div class="content">${rb}${content}</div>
+    <div class="bottom-nav">${tabs.map(t=>`<button class="nav-item${G.tab===t.id?' active':''}" onclick="G.tab='${t.id}';render()">${S(t.ic,20)}<span>${t.l}</span></button>`).join('')}</div>
+  </div>`;
+}
+
+/* Scene */
+function rScene(c){
+  let sc=c.scenes[G.curSc];
+  let tabs=c.scenes.map((s,i)=>`<button class="scene-tab${i===G.curSc?' active':''}" onclick="G.curSc=${i};render()">${s.name}</button>`).join('');
+  let ly=sc.layout;
+  let walls=ly.walls.map(w=>`<div class="sc-wall" style="left:${w.x}%;top:${w.y}%;width:${w.w}%;height:${w.h}%"></div>`).join('');
+  let furn=ly.furniture.map(f=>`<div class="sc-furn" style="left:${f.x}%;top:${f.y}%;width:${f.w}%;height:${f.h}%">${f.l||''}</div>`).join('');
+  let hps=sc.hotspots.map(h=>{
+    let done=h.clues.every(cl=>hasClue(cl));
+    let hid=h.requires&&!hasClue(h.requires);
+    return`<div class="hotspot${done?' done':''}${hid?' hidden':''}" style="left:${h.x}%;top:${h.y}%" onclick="clickHP('${h.id}')">${S(IC[h.ic]||'i-search',20)}</div>`;
+  }).join('');
+  return`<div class="scene-tabs">${tabs}</div><div class="scene-wrap">${walls}${furn}${hps}<div style="position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:11px;color:#9aa0a6">${sc.name}</div></div><div style="font-size:13px;color:#9aa0a6;text-align:center">点击发光点调查</div>`;
+}
+function clickHP(hid){
+  let c=CC2(),sc=c.scenes[G.curSc],h=sc.hotspots.find(x=>x.id===hid);if(!h)return;
+  let nw=h.clues.filter(cl=>!hasClue(cl));
+  nw.forEach(cl=>{addClue(cl);let cd=c.clues.find(x=>x.id===cl);if(cd)toast(`发现：${cd.n}`)});
+  let ch=nw.map(cl=>{let cd=c.clues.find(x=>x.id===cl);return cd?`<div class="clue-found">${S('i-key',16)}${cd.n}</div>`:''}).join('');
+  if(!nw.length&&!h.clues.length)ch='<p style="color:#9aa0a6;font-size:13px">没有更多发现了。</p>';
+  showModal(`${S('i-search',18)} ${h.name}`,`<p>${h.desc}</p>${ch}`,`<button class="modal-btn" onclick="closeModal();render()">确定</button>`);
+}
+
+/* Suspects */
+function rSuspects(c){
+  if(G.inter!==null)return rInter(c);
+  return c.suspects.map(s=>`<div class="card suspect-card" onclick="G.inter='${s.id}';G.dlgLog=[];render()">
+    <div class="suspect-av">${S('i-person',26)}</div>
+    <div style="flex:1"><div style="font-size:15px;font-weight:600">${s.name}</div><div style="font-size:12px;color:#9aa0a6">${s.role}</div></div>
+    ${S('i-arrow-r',18)}
+  </div>`).join('');
+}
+function rInter(c){
+  let s=c.suspects.find(x=>x.id===G.inter);if(!s)return'';
+  if(!G.dlgLog)G.dlgLog=[];
+  let logH=G.dlgLog.map(d=>`<div class="dlg-bubble"><div class="dlg-speaker">${d.w}</div><div class="dlg-text${d.rev?' reveal':''}${d.con?' contra':''}">${d.t}</div></div>`).join('');
+  let qs=s.dlgs.filter((d,i)=>d.q&&(d.req?hasClue(d.req):true)&&(!G.usedQ[G.inter]||!G.usedQ[G.inter].includes(i)));
+  let qH=qs.length?qs.map(d=>{
+    let ri=s.dlgs.indexOf(d);
+    if(d.ev&&!hasClue(d.ev))return'';
+    return`<button class="q-btn" onclick="askQ(${ri})">${S('i-chat',16)}${d.q}</button>`;
+  }).join(''):'<div style="font-size:13px;color:#9aa0a6;padding:8px">暂无更多问题</div>';
+  return`<div style="display:flex;flex-direction:column;height:100%">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #2e3440;flex-shrink:0">
+      <div class="suspect-av">${S('i-person',26)}</div>
+      <div style="flex:1"><div style="font-size:15px;font-weight:600">${s.name}</div><div style="font-size:12px;color:#9aa0a6">${s.role}</div></div>
+      <button class="back-btn" onclick="G.inter=null;render()">${S('i-arrow-l')}</button>
+    </div>
+    <div class="dlg-area">${logH}</div>
+    <div class="q-area">
+      <div style="display:flex;gap:6px;padding:8px 0"><button class="ev-btn" onclick="G.evPick=!G.evPick;render()">${S('i-key',14)}出示证据</button></div>
+      <div class="q-list">${qH}</div>
+    </div>
+    <div class="ev-picker${G.evPick?' show':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #2e3440"><span style="font-size:14px;font-weight:600">选择证据</span><button class="modal-btn" onclick="G.evPick=false;render()">${S('i-close',16)}</button></div>
+      <div style="flex:1;overflow-y:auto;padding:10px 14px">${rEvPick(c)}</div>
+    </div>
+  </div>`;
+}
+function rEvPick(c){
+  return G.clues.filter(cl=>c.clues.find(x=>x.id===cl)).map(cl=>{
+    let cd=c.clues.find(x=>x.id===cl);
+    return`<div class="ev-item" onclick="presentEv('${cl}')">${S('i-key',18)}<div><div style="font-weight:500">${cd.n}</div></div></div>`;
+  }).join('')||'<div style="color:#9aa0a6;font-size:13px;padding:8px">暂无可用证据</div>';
+}
+function askQ(idx){
+  let c=CC2(),s=c.suspects.find(x=>x.id===G.inter),d=s.dlgs[idx];if(!d)return;
+  if(!G.usedQ[G.inter])G.usedQ[G.inter]=[];
+  G.usedQ[G.inter].push(idx);
+  G.dlgLog.push({w:'你',t:d.q});
+  G.dlgLog.push({w:s.name,t:d.a||d.t,rev:!!(d.r&&d.r.length),con:!!d.c});
+  if(d.r)d.r.forEach(r=>{if(addClue(r)){let cd=c.clues.find(x=>x.id===r);if(cd)toast(`解锁：${cd.n}`)}});
+  save();render();
+  let area=document.querySelector('.dlg-area');if(area)area.scrollTop=area.scrollHeight;
+}
+function presentEv(clueId){
+  G.evPick=false;
+  let c=CC2(),s=c.suspects.find(x=>x.id===G.inter);
+  let m=s.dlgs.find((d,i)=>d.ev===clueId&&(!G.usedQ[G.inter]||!G.usedQ[G.inter].includes(i)));
+  if(m){G.dlgLog.push({w:'你',t:`（出示：${c.clues.find(x=>x.id===clueId)?.n}）`});askQ(s.dlgs.indexOf(m));}
+  else{G.dlgLog.push({w:'你',t:`（出示：${c.clues.find(x=>x.id===clueId)?.n}）`});G.dlgLog.push({w:s.name,t:'这和我的供述没有关系。'});toast('证据不相关','warn');save();render();}
+}
+
+/* Timeline */
+function rTimeline(c){
+  let tl=c.timeline,pl=G.tlPlace[c.id]||{};
+  let sorted=tl.events.slice().sort((a,b)=>a.order-b.order);
+  let slots=sorted.map(ev=>{
+    let pid=pl[ev.order],ok=pid===ev.id,pev=pid?tl.events.find(e=>e.id===pid):null;
+    return`<div class="tl-slot"><div class="tl-dot${pid?(ok?' filled':' wrong'):''}"></div><div class="tl-time">${ev.time}</div>${pev?`<div class="tl-filled" onclick="rmTL(${ev.order})">${pev.text}</div>`:`<div class="tl-empty" onclick="selTL(${ev.order})">点击放置事件</div>`}</div>`;
+  }).join('');
+  let pool=tl.events.filter(e=>!Object.values(pl).includes(e.id));
+  let poolH=pool.map(e=>`<div class="pool-item${G.selPool===e.id?' sel':''}" onclick="G.selPool='${e.id}';render()">${e.text}（${e.time}）</div>`).join('');
+  let allDone=Object.keys(pl).length===tl.events.length;
+  return`<div class="tl-track"><div class="tl-line"></div>${slots}</div><div class="tl-pool"><div style="font-size:12px;color:#9aa0a6;margin-bottom:8px">${S('i-clock',14)} 待放置事件</div>${poolH||'<div style="color:#9aa0a6;font-size:12px">全部已放置</div>'}</div>${allDone?`<button class="check-btn" onclick="checkTL()">确认时间线</button>`:''}`;
+}
+function selTL(order){if(!G.selPool)return toast('先选择下方事件','warn');if(!G.tlPlace[CC2().id])G.tlPlace[CC2().id]={};G.tlPlace[CC2().id][order]=G.selPool;G.selPool=null;save();render();}
+function rmTL(order){if(G.tlPlace[CC2().id]){delete G.tlPlace[CC2().id][order];save();render();}}
+function checkTL(){let c=CC2(),pl=G.tlPlace[c.id]||{};if(c.timeline.events.every(e=>pl[e.order]===e.id))toast('时间线正确！','ok');else toast('有误，检查标红位置','warn');}
+
+/* Clues */
+function rClues(c){
+  let flt=G.clueFilter,cats=['全部','物证','口供','文件','推理'];
+  let fl=flt==='全部'?G.clues:G.clues.filter(cl=>{let cd=c.clues.find(x=>x.id===cl);return cd&&cd.cat===flt});
+  let fltH=cats.map(cat=>`<button class="clue-filter${flt===cat?' active':''}" onclick="G.clueFilter='${cat}';render()">${cat}</button>`).join('');
+  let cards=fl.map(cl=>{let cd=c.clues.find(x=>x.id===cl);if(!cd)return'';
+    return`<div class="card" style="padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="badge ${CC[cd.cat]||'badge-ev'}">${cd.cat}</span><span style="font-size:14px;font-weight:600;flex:1">${cd.n}</span></div><div style="font-size:13px;color:#9aa0a6;line-height:1.5">${cd.d}</div></div>`;
+  }).join('');
+  let synth=rSynth(c);
+  return`<div class="clue-filters">${fltH}</div>${cards||'<div class="empty-state">'+S('i-clipboard',42)+'<div>暂无线索</div></div>'}<div class="divider"></div><div style="font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">${S('i-plus',16)}线索合成</div>${synth}`;
+}
+function rSynth(c){
+  if(!c.synthesis)return'';
+  let s0=G.selSynth[1],s1=G.selSynth[2];
+  let avail=c.synthesis.filter(sy=>!G.synthDone.includes(sy.input.slice().sort().join(',')));
+  let cls=G.clues.filter(cl=>c.clues.find(x=>x.id===cl));
+  let slotH=idx=>{let sel=idx===1?s0:s1;if(sel){let cd=c.clues.find(x=>x.id===sel);return cd?`<div style="font-size:12px;font-weight:500">${cd.n}</div>`:''}return'<div style="color:#9aa0a6;font-size:11px">选择线索</div>'};
+  let poolH=cls.map(cl=>{let cd=c.clues.find(x=>x.id===cl);let used=(s0===cl||s1===cl);return`<div class="pool-item${used?' sel':''}" style="padding:8px 10px;font-size:12px;margin-bottom:4px" onclick="pickSy(${G.synthSlot},'${cl}')">${cd.n}</div>`}).join('');
+  let resH='';
+  if(s0&&s1){
+    let recipe=avail.find(sy=>{let inp=sy.input.slice().sort(),sel=[s0,s1].sort();return inp[0]===sel[0]&&inp[1]===sel[1]});
+    if(recipe)resH=`<div class="synth-result" onclick="doSynth('${recipe.input.slice().sort().join(',')}','${recipe.output}')"><div><div style="font-weight:600;margin-bottom:4px">${S('i-bulb',16)} 点击合成</div></div></div>`;
+    else if(G.synthDone.find(d=>{let inp=d.split(',');return inp.includes(s0)&&inp.includes(s1)}))resH=`<div class="synth-result" style="border-color:#2e3440;color:#9aa0a6">已合成过</div>`;
+    else resH=`<div class="synth-result" style="border-color:rgba(192,57,43,.3);color:#c0392b">无法合成</div>`;
+  }
+  return`<div class="synth-wrap"><div class="synth-slots"><div class="synth-slot${s0?' filled':''}" onclick="G.synthSlot=1;render()">${slotH(1)}</div><div style="font-size:20px;color:#d4a017;font-weight:700">+</div><div class="synth-slot${s1?' filled':''}" onclick="G.synthSlot=2;render()">${slotH(2)}</div></div><div style="font-size:20px;color:#9aa0a6;font-weight:700">=</div>${resH||'<div class="synth-result" style="border-color:#2e3440;color:#9aa0a6">选择两条线索合成</div>'}<div style="width:100%;margin-top:8px"><div style="font-size:12px;color:#9aa0a6;margin-bottom:6px">选择线索：</div>${poolH}</div></div>`;
+}
+function pickSy(slot,cl){G.selSynth[slot]=cl;render()}
+function doSynth(key,output){G.synthDone.push(key);addClue(output);let cd=CC2().clues.find(x=>x.id===output);if(cd)toast(`合成：${cd.n}`,'ok');G.selSynth=[0,null,null];save();render();}
+
+/* Accuse */
+function rAccuse(c){
+  if(!G.accSt)G.accSt={suspect:null,evidence:[]};
+  let as=G.accSt;
+  let susH=c.suspects.map(s=>`<div class="acc-suspect${as.suspect===s.id?' selected':''}" onclick="G.accSt.suspect='${s.id}';render()"><div class="suspect-av" style="width:40px;height:40px">${S('i-person',22)}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${s.name}</div><div style="font-size:12px;color:#9aa0a6">${s.role}</div></div></div>`).join('');
+  let evH=G.clues.filter(cl=>c.clues.find(x=>x.id===cl)).map(cl=>{let cd=c.clues.find(x=>x.id===cl),sel=as.evidence.includes(cl);
+    return`<div class="acc-ev${sel?' selected':''}" onclick="togAccEv('${cl}')"><div class="chk">${sel?S('i-check',14):''}</div><div style="flex:1;font-size:13px;font-weight:500">${cd.n}</div></div>`;
+  }).join('');
+  let ready=as.suspect&&as.evidence.length>=2;
+  // If in twist phase, show contradictions
+  let contraH='';
+  if(G.twist&&c.twist){
+    let found=G.revFound[c.id]||[];
+    contraH=`<div class="divider"></div><div style="font-size:14px;font-weight:600;color:#8e44ad;margin-bottom:8px">${S('i-exclaim',16)} 矛盾点 (${found.length}/${c.twist.contras.length})</div>`;
+    contraH+=c.twist.contras.map((ct,i)=>{
+      let isFound=found.includes(i);
+      return`<div class="contra-card${isFound?' found':''}" onclick="findContra(${i})"><div style="font-size:13px;line-height:1.6">${ct.text}</div>${isFound?`<div style="font-size:12px;color:#27ae60;margin-top:4px">已发现</div>`:''}</div>`;
+    }).join('');
+    let allFound=found.length>=c.twist.contras.length;
+    if(allFound)contraH+=`<button class="submit-btn ready" style="margin-top:12px" onclick="trueEnding()">揭示真相</button>`;
+  }
+  return`<div style="font-size:14px;font-weight:600;color:#d4a017;margin-bottom:8px">${S('i-gavel',16)}选择嫌疑人</div>${susH}<div class="divider"></div><div style="font-size:14px;font-weight:600;color:#d4a017;margin-bottom:8px">${S('i-key',16)}选择关键证据（至少2条）</div>${evH}${!G.twist?`<button class="submit-btn ${ready?'ready':'not-ready'}" onclick="submitAcc()">提交指认</button>`:''}${contraH}`;
+}
+function togAccEv(cl){let as=G.accSt,i=as.evidence.indexOf(cl);if(i>=0)as.evidence.splice(i,1);else if(as.evidence.length<3)as.evidence.push(cl);render();}
+function submitAcc(){
+  let c=CC2(),as=G.accSt;if(!as.suspect||as.evidence.length<2)return;
+  G.twist=true;save();
+  showTwist(c.twist.text,()=>{G.tab='accuse';save();render();toast('卷宗重审模式','twist');});
+}
+function findContra(idx){
+  let c=CC2();if(!G.revFound[c.id])G.revFound[c.id]=[];
+  if(!G.revFound[c.id].includes(idx)){G.revFound[c.id].push(idx);let ct=c.twist.contras[idx];if(ct.ev&&addClue(ct.ev)){let cd=c.clues.find(x=>x.id===ct.ev);if(cd)toast(`发现：${cd.n}`,'ok');}save();render();}
+}
+function trueEnding(){
+  let c=CC2(),as=G.accSt;
+  let perfect=as.suspect===c.accusation.suspect&&c.accusation.evidence.every(e=>as.evidence.includes(e))&&G.hints===0;
+  let trueEnd=as.suspect===c.accusation.suspect;
+  G.endType=perfect?'perfect':trueEnd?'true_end':'surface';
+  G.stars[c.id]=Math.max(G.stars[c.id]||0,c.endings[G.endType].stars);
+  unlockAch(c.id+'_clear');
+  if(G.stars[c.id]>=3)unlockAch(c.id+'_perfect');
+  if(CASES.every(cs=>G.stars[cs.id]>0))unlockAch('all_clear');
+  if(CASES.every(cs=>G.stars[cs.id]>=3))unlockAch('all_perfect');
+  save();G.screen='ending';render();
+}
+
+/* Ending */
+function rEnd(){
+  let c=CC2(),end=c.endings[G.endType];
+  let starsH=[1,2,3].map(n=>`<span class="${n<=end.stars?'star-f':'star-e'}">${S('i-star-f',36)}</span>`).join('');
+  app.innerHTML=`<div class="screen active end-screen">
+    <div class="end-stars">${starsH}</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:6px">${end.title}</div>
+    <div style="font-size:13px;color:#9aa0a6;margin-bottom:20px">${c.name} · ${end.stars}星结局</div>
+    <div style="font-size:14px;line-height:1.7;color:#9aa0a6;margin-bottom:24px;text-align:left;background:#1e222b;padding:14px;border-radius:10px;border:1px solid #2e3440;max-height:180px;overflow-y:auto">${end.desc}</div>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:260px">
+      <button class="menu-btn btn-p" onclick="G.screen='cases';render()">返回案件列表</button>
+      <button class="menu-btn btn-s" onclick="selCase(${G.ci})">重新调查</button>
+      <button class="menu-btn btn-g" onclick="G.screen='menu';render()">主菜单</button>
+    </div>
+  </div>`;
+}
+
+/* Achievements */
+function rAch(){
+  let achs=[
+    {id:'c1_clear',n:'雨夜初晴',d:'通关案件001'},
+    {id:'c1_perfect',n:'完美推理',d:'三星通关案件001'},
+    {id:'c2_clear',n:'密室破译',d:'通关案件002'},
+    {id:'c2_perfect',n:'完美推理',d:'三星通关案件002'},
+    {id:'c3_clear',n:'列车迷踪',d:'通关案件003'},
+    {id:'c3_perfect',n:'完美推理',d:'三星通关案件003'},
+    {id:'all_clear',n:'大侦探',d:'通关全部案件'},
+    {id:'all_perfect',n:'传奇侦探',d:'全部三星通关'}
+  ];
+  let h=`<div class="screen active"><div class="top-bar"><button class="back-btn" onclick="G.screen='menu';render()">${S('i-arrow-l')}</button><span class="bar-title">成就</span></div><div class="content">`;
+  achs.forEach(a=>{
+    let unlocked=G.ach[a.id];
+    h+=`<div class="card ach-card ${unlocked?'unlocked':'locked'}"><div class="ach-icon" style="color:${unlocked?'#d4a017':'#9aa0a6'}">${S(unlocked?'i-trophy':'i-shield',22)}</div><div><div style="font-size:14px;font-weight:600">${a.n}</div><div style="font-size:12px;color:#9aa0a6">${a.d}</div></div></div>`;
+  });
+  h+=`</div></div>`;app.innerHTML=h;
+}
+function unlockAch(id){if(!G.ach[id]){G.ach[id]=true;save();toast('成就解锁！','ok');}}
+
+/* Init */
+render();
+</script>
+</body>
+</html>
