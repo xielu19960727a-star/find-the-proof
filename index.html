@@ -135,6 +135,21 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .empty-state svg{width:42px;height:42px;opacity:.3}
 .text-muted{color:#9aa0a6}.text-accent{color:#d4a017}.text-danger{color:#c0392b}.text-twist{color:#8e44ad}.text-ok{color:#27ae60}
 .divider{height:1px;background:#2e3440;margin:12px 0}
+.settings-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px;background:#252a35;border-radius:10px;margin-bottom:10px}
+.settings-toggle-label{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.toggle-switch{position:relative;width:48px;height:26px;background:#2e3440;border-radius:13px;cursor:pointer;transition:background .2s}
+.toggle-switch.active{background:#d4a017}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-switch.active::after{transform:translateX(22px)}
+.save-slot{padding:14px;background:#252a35;border:1px solid #2e3440;border-radius:10px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.save-slot:active{transform:scale(.97)}
+.save-slot.has-data{border-color:rgba(212,160,23,.3)}
+.save-slot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.save-slot-title{font-size:14px;font-weight:600}
+.save-slot-empty{color:#9aa0a6;font-size:13px}
+.save-slot-info{display:flex;gap:12px;font-size:12px;color:#9aa0a6}
+.settings-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#9aa0a6;border-radius:50%;flex-shrink:0}
+.settings-btn:active{background:#2e3440}
 </style>
 </head>
 <body>
@@ -188,6 +203,9 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v5c0 5.5-3.8 10-8 11-4.2-1-8-5.5-8-11V6l8-4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
 <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1.08-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1.08 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 <div id="app"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:#9aa0a6;text-align:center;padding:32px"><div style="font-size:18px;color:#d4a017">迷案卷宗</div><div>正在加载，请稍候…</div><div style="font-size:12px">若长时间无响应，请尝试使用 Edge 或 Chrome 浏览器打开</div></div></div>
 <noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0f1115;color:#e8e6e3;text-align:center;padding:32px;z-index:999"><div><div style="font-size:20px;color:#d4a017;margin-bottom:12px">迷案卷宗</div><div>请启用 JavaScript 以运行游戏</div></div></div></noscript>
@@ -196,7 +214,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 <div class="modal-ov" id="modal-ov"><div class="modal" id="modal-box"></div></div>
 <script>
 /* ===== DATA ===== */
-const IC={search:'i-search',fingerprint:'i-fingerprint',chat:'i-chat',folder:'i-folder',key:'i-key',lock:'i-lock',clock:'i-clock',person:'i-person',knife:'i-knife',poison:'i-poison',footprint:'i-footprint',blood:'i-blood',umbrella:'i-umbrella',wine:'i-wine',phone:'i-phone',letter:'i-letter',photo:'i-photo',suitcase:'i-suitcase',ticket:'i-ticket',camera:'i-camera',door:'i-door',window:'i-window',bed:'i-bed',desk:'i-desk',bookshelf:'i-bookshelf',fireplace:'i-fireplace',couch:'i-couch',counter:'i-counter',frame:'i-frame',display:'i-display',vent:'i-vent',money:'i-money',clipboard:'i-clipboard'};
+const IC={search:'i-search',fingerprint:'i-fingerprint',chat:'i-chat',folder:'i-folder',key:'i-key',lock:'i-lock',clock:'i-clock',person:'i-person',knife:'i-knife',poison:'i-poison',footprint:'i-footprint',blood:'i-blood',umbrella:'i-umbrella',wine:'i-wine',phone:'i-phone',letter:'i-letter',photo:'i-photo',suitcase:'i-suitcase',ticket:'i-ticket',camera:'i-camera',door:'i-door',window:'i-window',bed:'i-bed',desk:'i-desk',bookshelf:'i-bookshelf',fireplace:'i-fireplace',couch:'i-couch',counter:'i-counter',frame:'i-frame',display:'i-display',vent:'i-vent',money:'i-money',clipboard:'i-clipboard',settings:'i-settings'};
 const CC={物证:'badge-ev',口供:'badge-te',文件:'badge-do',推理:'badge-re'};
 function S(i,w=24){return`<svg width="${w}" height="${w}"><use href="#${i}"/></svg>`}
 
@@ -530,10 +548,32 @@ perfect:{title:'侦探的觉醒',desc:'钱志明不仅要骗保——要让前�
 ];
 
 /* ===== STATE ===== */
-let G={screen:'menu',ci:-1,tab:'scene',clues:[],dlog:{},usedQ:{},tlPlace:{},synthDone:[],accSt:{},insight:3,hints:0,stars:{},ach:{},revFound:{},twist:false,selPool:null,selSynth:[0,null,null],synthSlot:1,evPick:false,curSc:0,inter:null,dlgLog:[],clueFilter:'全部',endType:null};
-function save(){try{localStorage.setItem('det_save',JSON.stringify({clues:G.clues,dlog:G.dlog,usedQ:G.usedQ,tlPlace:G.tlPlace,synthDone:G.synthDone,insight:G.insight,hints:G.hints,stars:G.stars,ach:G.ach,revFound:G.revFound,ci:G.ci,twist:G.twist,accSt:G.accSt,dlgLog:G.dlgLog,endType:G.endType,selSynth:G.selSynth,curSc:G.curSc,inter:G.inter,tab:G.tab}))}catch(e){}}
-function load(){try{let d=JSON.parse(localStorage.getItem('det_save'));if(d){Object.assign(G,d);return true}}catch(e){}return false}
-function hasSave(){try{return!!localStorage&&!!localStorage.getItem('det_save')}catch(e){return false}}
+let G={screen:'menu',ci:-1,tab:'scene',clues:[],dlog:{},usedQ:{},tlPlace:{},synthDone:[],accSt:{suspect:null,evidence:[]},insight:3,hints:0,stars:{},ach:{},revFound:{},twist:false,selPool:null,selSynth:[0,null,null],synthSlot:1,evPick:false,curSc:0,inter:null,dlgLog:[],clueFilter:'全部',endType:null,slot:0};
+let settings={sfx:true,bgm:true};
+function saveSettings(){try{localStorage.setItem('det_settings',JSON.stringify(settings))}catch(e){}}
+function loadSettings(){try{let d=JSON.parse(localStorage.getItem('det_settings'));if(d)Object.assign(settings,d)}catch(e){}}
+function save(slot){
+  slot=slot!==undefined?slot:G.slot;
+  try{
+    let meta={caseName:G.ci>=0?CASES[G.ci].name:'',date:new Date().toLocaleString('zh-CN'),clueCount:G.clues.length,tab:G.tab};
+    localStorage.setItem('det_save_'+slot,JSON.stringify({clues:G.clues,dlog:G.dlog,usedQ:G.usedQ,tlPlace:G.tlPlace,synthDone:G.synthDone,insight:G.insight,hints:G.hints,stars:G.stars,ach:G.ach,revFound:G.revFound,ci:G.ci,twist:G.twist,accSt:G.accSt,dlgLog:G.dlgLog,endType:G.endType,selSynth:G.selSynth,curSc:G.curSc,inter:G.inter,tab:G.tab,slot:slot,_meta:meta}));
+  }catch(e){}
+}
+function load(slot){
+  slot=slot!==undefined?slot:G.slot;
+  try{let d=JSON.parse(localStorage.getItem('det_save_'+slot));if(d){Object.assign(G,d);G.slot=slot;return true}}catch(e){}return false
+}
+function hasSave(slot){
+  try{
+    if(slot!==undefined)return!!localStorage.getItem('det_save_'+slot);
+    for(let i=0;i<5;i++)if(localStorage.getItem('det_save_'+i))return true;
+    return false;
+  }catch(e){return false}
+}
+function getSaveMeta(slot){
+  try{let d=JSON.parse(localStorage.getItem('det_save_'+slot));return d?d._meta:null}catch(e){return null}
+}
+function deleteSave(slot){try{localStorage.removeItem('det_save_'+slot)}catch(e){}}
 function CC2(){return G.ci>=0?CASES[G.ci]:null}
 function hasClue(id){return G.clues.includes(id)}
 function addClue(id){if(!G.clues.includes(id)){G.clues.push(id);save();return true}return false}
@@ -568,14 +608,87 @@ function render(){
   }
 }
 function rMenu(){
+  let slotsH='';
+  for(let i=0;i<5;i++){
+    let meta=getSaveMeta(i);
+    if(meta){
+      slotsH+=`<div class="save-slot has-data" onclick="loadSlot(${i})">
+        <div class="save-slot-header"><span class="save-slot-title">存档 ${i+1}</span><span style="font-size:11px;color:#9aa0a6">${meta.date||''}</span></div>
+        <div class="save-slot-info"><span>${meta.caseName||'未知案件'}</span><span>线索: ${meta.clueCount||0}</span></div>
+      </div>`;
+    }else{
+      slotsH+=`<div class="save-slot" onclick="newGameSlot(${i})"><div class="save-slot-empty">存档 ${i+1} - 空</div></div>`;
+    }
+  }
   app.innerHTML=`<div class="screen active menu-screen">
     <div style="color:#d4a017;margin-bottom:16px">${S('i-fingerprint',72)}</div>
     <div class="menu-title">迷案卷宗</div>
     <div class="menu-sub">你以为找到了真相，但真相不止一层</div>
-    <button class="menu-btn btn-p" onclick="startNew()">开始新游戏</button>
-    <button class="menu-btn btn-s" onclick="contGame()" ${hasSave()?'':'style="opacity:.4;pointer-events:none"'}>继续游戏</button>
+    <button class="menu-btn btn-p" onclick="showNewGame()">开始新游戏</button>
+    <button class="menu-btn btn-s" onclick="showLoadSlots()">继续游戏</button>
     <button class="menu-btn btn-g" onclick="G.screen='ach';render()">成就</button>
+    <div style="margin-top:20px;width:100%;max-width:260px">${slotsH}</div>
   </div>`;
+}
+function showNewGame(){
+  let slotsH='';
+  for(let i=0;i<5;i++){
+    let meta=getSaveMeta(i);
+    let label=meta?`存档 ${i+1} (${meta.caseName})`:`存档 ${i+1} (空)`;
+    slotsH+=`<div class="save-slot${meta?' has-data':''}" onclick="newGameSlot(${i})"><div>${label}</div>${meta?'<div style="font-size:11px;color:#c0392b;margin-top:4px">覆盖将删除原有进度</div>':''}</div>`;
+  }
+  showModal('选择存档位',slotsH);
+}
+function newGameSlot(i){
+  closeModal();
+  G.slot=i;
+  G.screen='cases';render();
+}
+function showLoadSlots(){
+  if(!hasSave()){toast('没有存档','warn');return}
+  let slotsH='';
+  for(let i=0;i<5;i++){
+    let meta=getSaveMeta(i);
+    if(meta){
+      slotsH+=`<div class="save-slot has-data" onclick="loadSlot(${i})">
+        <div class="save-slot-header"><span class="save-slot-title">存档 ${i+1}</span><span style="font-size:11px;color:#9aa0a6">${meta.date||''}</span></div>
+        <div class="save-slot-info"><span>${meta.caseName||'未知案件'}</span><span>线索: ${meta.clueCount||0}</span></div>
+      </div>`;
+    }
+  }
+  showModal('选择存档',slotsH);
+}
+function loadSlot(i){
+  closeModal();
+  if(load(i)){G.screen='game';G.evPick=false;G.selPool=null;G.synthSlot=1;G.clueFilter='全部';render()}
+  else toast('存档加载失败','warn');
+}
+function showSettings(){
+  let body=`
+    <div class="settings-toggle">
+      <div class="settings-toggle-label">${S('i-volume',18)} 音效</div>
+      <div class="toggle-switch${settings.sfx?' active':''}" onclick="toggleSfx()"></div>
+    </div>
+    <div class="settings-toggle">
+      <div class="settings-toggle-label">${S('i-music',18)} 背景音乐</div>
+      <div class="toggle-switch${settings.bgm?' active':''}" onclick="toggleBgm()"></div>
+    </div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2e3440">
+      <div style="font-size:13px;color:#9aa0a6;margin-bottom:8px">当前存档: 存档 ${G.slot+1}</div>
+      <button class="menu-btn btn-s" style="width:100%;margin-bottom:8px" onclick="save();toast('已保存到存档 '+(G.slot+1),'ok');closeModal()">手动保存</button>
+    </div>
+  `;
+  showModal('设置',body);
+}
+function toggleSfx(){
+  settings.sfx=!settings.sfx;
+  saveSettings();
+  showSettings();
+}
+function toggleBgm(){
+  settings.bgm=!settings.bgm;
+  saveSettings();
+  showSettings();
 }
 function rCases(){
   let h=`<div class="screen active"><div class="top-bar"><button class="back-btn" onclick="G.screen='menu';render()">${S('i-arrow-l')}</button><span class="bar-title">选择案件</span></div><div class="content">`;
@@ -592,10 +705,8 @@ function rCases(){
   });
   h+=`</div></div>`;app.innerHTML=h;
 }
-function startNew(){G.screen='cases';render()}
-function contGame(){if(load()){G.screen='game';G.evPick=false;G.selPool=null;G.synthSlot=1;G.clueFilter='全部';render()}else toast('无存档','warn')}
 function selCase(i){
-  G.ci=i;G.clues=[];G.dlog={};G.usedQ={};G.tlPlace={};G.synthDone=[];G.accSt={};G.insight=3;G.hints=0;G.revFound={};G.twist=false;G.curSc=0;G.tab='scene';G.inter=null;G.dlgLog=[];G.clueFilter='全部';
+  G.ci=i;G.clues=[];G.dlog={};G.usedQ={};G.tlPlace={};G.synthDone=[];G.accSt={suspect:null,evidence:[]};G.insight=3;G.hints=0;G.revFound={};G.twist=false;G.curSc=0;G.tab='scene';G.inter=null;G.dlgLog=[];G.clueFilter='全部';
   save();G.screen='game';render();
   setTimeout(()=>showModal(`${S('i-folder',18)} 案件简报`,`<p style="line-height:1.8">${CASES[i].briefing}</p>`,`<button class="modal-btn" onclick="closeModal()">开始调查</button>`),300);
 }
@@ -607,7 +718,7 @@ function rGame(){
   let content='';
   switch(G.tab){case'scene':content=rScene(c);break;case'suspect':content=rSuspects(c);break;case'timeline':content=rTimeline(c);break;case'clues':content=rClues(c);break;case'accuse':content=rAccuse(c);break;}
   app.innerHTML=`<div class="screen active">
-    <div class="top-bar"><button class="back-btn" onclick="G.screen='cases';render()">${S('i-arrow-l')}</button><span class="bar-title">${c.num} · ${c.name}</span><div class="bar-status"><span class="insight">${S('i-bulb',14)}${G.insight}</span><span>${cn}/${ct}</span></div></div>
+    <div class="top-bar"><button class="back-btn" onclick="G.screen='cases';render()">${S('i-arrow-l')}</button><span class="bar-title">${c.num} · ${c.name}</span><div class="bar-status"><span class="insight">${S('i-bulb',14)}${G.insight}</span><span>${cn}/${ct}</span></div><button class="settings-btn" onclick="showSettings()">${S('i-settings',20)}</button></div>
     <div class="content">${rb}${content}</div>
     <div class="bottom-nav">${tabs.map(t=>`<button class="nav-item${G.tab===t.id?' active':''}" onclick="G.tab='${t.id}';render()">${S(t.ic,20)}<span>${t.l}</span></button>`).join('')}</div>
   </div>`;
@@ -745,7 +856,7 @@ function doSynth(key,output){G.synthDone.push(key);addClue(output);let cd=CC2().
 
 /* Accuse */
 function rAccuse(c){
-  if(!G.accSt)G.accSt={suspect:null,evidence:[]};
+  if(!G.accSt||!G.accSt.evidence)G.accSt={suspect:null,evidence:[]};
   let as=G.accSt;
   let susH=c.suspects.map(s=>`<div class="acc-suspect${as.suspect===s.id?' selected':''}" onclick="G.accSt.suspect='${s.id}';render()"><div class="suspect-av" style="width:40px;height:40px">${S('i-person',22)}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${s.name}</div><div style="font-size:12px;color:#9aa0a6">${s.role}</div></div></div>`).join('');
   let evH=G.clues.filter(cl=>c.clues.find(x=>x.id===cl)).map(cl=>{let cd=c.clues.find(x=>x.id===cl),sel=as.evidence.includes(cl);
@@ -828,6 +939,7 @@ function rAch(){
 function unlockAch(id){if(!G.ach[id]){G.ach[id]=true;save();toast('成就解锁！','ok');}}
 
 /* Init */
+loadSettings();
 render();
 </script>
 </body>
