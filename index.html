@@ -150,6 +150,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .save-slot-info{display:flex;gap:12px;font-size:12px;color:#9aa0a6}
 .settings-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#9aa0a6;border-radius:50%;flex-shrink:0}
 .settings-btn:active{background:#2e3440}
+.hint-btn{display:flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(212,160,23,.15);border-radius:14px;font-size:12px;font-weight:600;color:#d4a017}
+.hint-btn:active{background:rgba(212,160,23,.25)}
 </style>
 </head>
 <body>
@@ -206,6 +208,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1.08-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1.08 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 <div id="app"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:#9aa0a6;text-align:center;padding:32px"><div style="font-size:18px;color:#d4a017">迷案卷宗</div><div>正在加载，请稍候…</div><div style="font-size:12px">若长时间无响应，请尝试使用 Edge 或 Chrome 浏览器打开</div></div></div>
 <noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0f1115;color:#e8e6e3;text-align:center;padding:32px;z-index:999"><div><div style="font-size:20px;color:#d4a017;margin-bottom:12px">迷案卷宗</div><div>请启用 JavaScript 以运行游戏</div></div></div></noscript>
@@ -220,7 +223,7 @@ function S(i,w=24){return`<svg width="${w}" height="${w}"><use href="#${i}"/></s
 
 const CASES=[
 /* CASE 001 */
-{id:'c1',num:'001',name:'雨夜山庄',diff:'入门',brief:'山庄主人陈伯年死在反锁书房中，雨夜掩盖了一切痕迹。',
+{id:'c1',num:'001',name:'雨夜山庄',diff:1,brief:'山庄主人陈伯年死在反锁书房中，雨夜掩盖了一切痕迹。',
 briefing:'暴雨之夜，你接到报案赶往陈家山庄。山庄主人陈伯年被人发现死于书房，房门从内侧反锁，窗户半开。书桌上摊着一份刚修改的遗嘱。四位在场者各怀心事……',
 scenes:[
 {id:'study',name:'书房',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:35,y:10,w:30,h:16,l:'书桌'},{x:5,y:55,w:18,h:30,l:'书架'},{x:75,y:50,w:18,h:18,l:'壁炉'},{x:70,y:82,w:22,h:10,l:'窗户'}]},
@@ -327,7 +330,7 @@ true_end:{title:'管家的忠诚',desc:'管家周德明是行凶者，利用密�
 perfect:{title:'幕后主谋',desc:'陈晓利用管家对李家的情感操控他杀人。她精心策划了一切，甚至准备好管家的"认罪说辞"。法律不会因忠诚而网开一面。',stars:3}}
 },
 /* CASE 002 */
-{id:'c2',num:'002',name:'画廊密室',diff:'进阶',brief:'画廊老板在反锁密室中毒身亡，门窗完好，毒从何来？',
+{id:'c2',num:'002',name:'画廊密室',diff:2,brief:'画廊老板在反锁密室中毒身亡，门窗完好，毒从何来？',
 briefing:'墨风画廊发生命案。老板陈风死在地下密室，门窗从内侧反锁。死者面容扭曲，初步判断为中毒。四位与画廊关系密切的人各有秘密……',
 scenes:[
 {id:'gallery',name:'展厅',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:5,y:12,w:3,h:30,l:'画作'},{x:92,y:12,w:3,h:30,l:'画作'},{x:32,y:38,w:32,h:18,l:'展台'}]},
@@ -436,7 +439,7 @@ true_end:{title:'画家的毒笔',desc:'许墨是密室杀人设计者。氰化�
 perfect:{title:'沉默的共谋',desc:'许墨是凶手，赵衡让计划万无一失。赵衡事先知情还帮取走监控卡。正义或许迟到，真相永远不会被颜料覆盖。',stars:3}}
 },
 /* CASE 003 */
-{id:'c3',num:'003',name:'列车消失的乘客',diff:'烧脑',brief:'行驶列车上乘客在反锁包厢中消失，后被发现死于行李车厢。',
+{id:'c3',num:'003',name:'列车消失的乘客',diff:3,brief:'行驶列车上乘客在反锁包厢中消失，后被发现死于行李车厢。',
 briefing:'K1024次列车上，5号包厢乘客钱志明失踪，包厢门从内侧反锁。两小时后行李车厢发现一具面容相似但指纹不匹配的尸体。而你收到的委托信……又是怎么回事？',
 scenes:[
 {id:'cabin',name:'5号包厢',layout:{walls:[{x:0,y:0,w:100,h:2},{x:0,y:98,w:100,h:2},{x:0,y:0,w:2,h:100},{x:98,y:0,w:2,h:100}],furniture:[{x:8,y:12,w:34,h:18,l:'上铺'},{x:8,y:52,w:34,h:18,l:'下铺'},{x:58,y:18,w:30,h:14,l:'小桌'}]},
@@ -544,17 +547,17 @@ contras:[
 endings:{surface:{title:'前妻的复仇',desc:'刘雅被认定复仇杀人。但真正的棋手还在暗处微笑。',stars:1},
 true_end:{title:'消失的骗子',desc:'钱志明策划假死，杀害替身孙伟。他收买了列车员和孙浩。但他为什么要让你来调查？',stars:2},
 perfect:{title:'侦探的觉醒',desc:'钱志明不仅要骗保——要让前妻背杀人嫌疑。委托信是陷阱，你的推理会成为定罪刘雅的证据。但你看穿了这一切。钱志明计划败露，刘雅得以清白。你——不再是谁的棋子。',stars:3}}},
-{id:'case004',num:'004',name:'校园谜案',diff:'★★☆',brief:'晚自习后实验室爆炸，学生重伤。监控显示无人进出，现场却有陌生指纹。',briefing:'晚自习后化学实验室爆炸，学生林小雨昏迷。门从内反锁，监控无人进出，但有陌生指纹。',scenes:[{name:'走廊',layout:'room',hotspots:[{x:30,y:40,r:12,id:'h1',label:'破碎的门'},{x:70,y:30,r:10,id:'h2',label:'监控'},{x:50,y:70,r:14,id:'h3',label:'碎片'}]},{name:'实验室',layout:'lab',hotspots:[{x:40,y:50,r:15,id:'h4',label:'爆炸点'},{x:75,y:35,r:10,id:'h5',label:'化学柜'},{x:20,y:65,r:10,id:'h6',label:'通风管'}]}],suspects:[{name:'王老师',role:'化学老师',avatar:'👨‍🏫',dialogue:[{q:'爆炸时你在哪？',a:'在办公室批改作业。',reveal:false},{q:'实验室钥匙有几把？',a:'两把，我和教务处各一把。',reveal:true}]},{name:'张同学',role:'同桌',avatar:'👦',dialogue:[{q:'今晚见过林小雨吗？',a:'晚自习后就回宿舍了。',reveal:false},{q:'有人看到你接近实验室？',a:'…我去拿过忘在那的书。',reveal:true}]},{name:'李校工',role:'后勤',avatar:'👴',dialogue:[{q:'今晚巡查有异常吗？',a:'通风管道好像被打开过。',reveal:true},{q:'你懂化学吗？',a:'不懂，但儿子在化工厂。',reveal:false}]}],clues:[{id:'c1',name:'陌生指纹',desc:'门把手上的指纹，不属于在校师生',scene:0,hs:'h1'},{id:'c2',name:'监控录像',desc:'爆炸前30分钟无人进出',scene:0,hs:'h2'},{id:'c3',name:'化学残留',desc:'含高浓度硝酸铵',scene:1,hs:'h4'},{id:'c4',name:'通风管痕迹',desc:'螺丝被拧动过',scene:1,hs:'h6'},{id:'c5',name:'手机',desc:'最后消息发给"那个人"',scene:0,hs:'h3'}],timeline:[{time:'20:30',event:'晚自习结束'},{time:'20:45',event:'最后离开教学楼'},{time:'21:10',event:'爆炸发生'}],synthesis:[{inputs:['c1','c4'],result:'有人从通风管进入',title:'入侵路径'},{inputs:['c3','c5'],result:'林小雨知道爆炸计划',title:'知情者'}],accusation:{suspect:'李校工',evidence:['c1','c4']},twist:{text:'李校工受儿子指使，从通风管进入制造爆炸，销毁学校违规存放危化品的记录。林小雨无意发现真相遭灭口。',contras:[{text:'李校工不懂化学，但儿子在化工厂',correct:true},{text:'通风管可绕过监控',correct:true},{text:'张同学没去过实验室',correct:false}]},endings:{true:'李校工父子被捕，学校违规曝光，校长辞职。',false:'案件陷入僵局。'}},
-{id:'case005',num:'005',name:'医院疑云',diff:'★★☆',brief:'ICU患者突然死亡，护士称全程监控，体内却检出致命药物。',briefing:'ICU患者赵明远凌晨3点死亡。护士刘芳称全程未离开，但尸检发现致命剂量氯化钾。监控显示2:30-3:00有三人进出。',scenes:[{name:'ICU病房',layout:'hospital',hotspots:[{x:50,y:50,r:15,id:'h1',label:'病床'},{x:20,y:30,r:10,id:'h2',label:'输液架'},{x:80,y:40,r:10,id:'h3',label:'监护仪'}]},{name:'护士站',layout:'desk',hotspots:[{x:40,y:45,r:12,id:'h4',label:'值班记录'},{x:70,y:60,r:10,id:'h5',label:'药品柜'},{x:30,y:75,r:10,id:'h6',label:'垃圾桶'}]}],suspects:[{name:'刘护士',role:'值班护士',avatar:'👩‍⚕️',dialogue:[{q:'2:30到3:00你在做什么？',a:'在护士站值班，偶尔查看病人。',reveal:false},{q:'你和赵明远认识吗？',a:'…三年前我照顾过他。',reveal:true}]},{name:'陈医生',role:'主治医生',avatar:'👨‍⚕️',dialogue:[{q:'赵明远病情如何？',a:'在好转，预计下周转出ICU。',reveal:false},{q:'你开过氯化钾处方吗？',a:'没有，他不需要那种药。',reveal:true}]},{name:'赵太太',role:'妻子',avatar:'👩',dialogue:[{q:'你今晚来过医院吗？',a:'2:50到的，看了一眼就走了。',reveal:false},{q:'你丈夫有保险吗？',a:'…有，一份巨额意外险。',reveal:true}]}],clues:[{id:'c1',name:'输液残留',desc:'残液中检出高浓度氯化钾',scene:0,hs:'h2'},{id:'c2',name:'值班记录',desc:'刘护士2:45巡查记录',scene:1,hs:'h4'},{id:'c3',name:'丢弃手套',desc:'垃圾桶内带血渍的乳胶手套',scene:1,hs:'h6'},{id:'c4',name:'监护仪数据',desc:'3:00停止，之前心率已异常',scene:0,hs:'h3'},{id:'c5',name:'药品记录',desc:'氯化钾少了2支',scene:1,hs:'h5'}],timeline:[{time:'2:30',event:'刘护士进入病区'},{time:'2:40',event:'陈医生查房'},{time:'2:50',event:'赵太太到达'},{time:'3:00',event:'赵明远死亡'}],synthesis:[{inputs:['c1','c5'],result:'氯化钾被注入输液袋',title:'投毒方式'},{inputs:['c3','c4'],result:'巡查记录被伪造',title:'时间矛盾'}],accusation:{suspect:'刘护士',evidence:['c1','c2']},twist:{text:'刘护士三年前照顾赵明远时，赵的疏忽致其父去世。她利用值班在输液袋注入氯化钾，伪造巡查记录。',contras:[{text:'刘护士称在护士站，但记录显示她进入病房',correct:true},{text:'陈医生查房时病人活着，但心率2:35已异常',correct:true},{text:'赵太太只看了一眼，手套上有她DNA',correct:false}]},endings:{true:'刘护士被捕，承认复仇。医院加强管理。',false:'案件以医疗事故结案。'}},
-{id:'case006',num:'006',name:'酒店密室',diff:'★★★',brief:'五星级酒店套房内，富商被发现死在反锁的房间中。窗户紧闭，空调出风口却有挣扎痕迹。',briefing:'五星酒店总统套房，富商周德华死于反锁房内。门链从内挂上，窗户密封完好。空调出风口发现微量血迹，房内保险箱被打开，价值千万的珠宝不翼而飞。',scenes:[{name:'总统套房',layout:'suite',hotspots:[{x:50,y:50,r:15,id:'h1',label:'尸体位置'},{x:25,y:30,r:10,id:'h2',label:'保险箱'},{x:80,y:25,r:10,id:'h3',label:'空调出风口'}]},{name:'酒店走廊',layout:'hall',hotspots:[{x:40,y:50,r:12,id:'h4',label:'走廊监控'},{x:70,y:60,r:10,id:'h5',label:'服务推车'},{x:30,y:75,r:10,id:'h6',label:'消防通道'}]}],suspects:[{name:'孙经理',role:'酒店经理',avatar:'🤵',dialogue:[{q:'谁有套房钥匙？',a:'只有我和前台，都有记录。',reveal:false},{q:'监控有异常吗？',a:'走廊监控在2点有5分钟空白。',reveal:true}]},{name:'李服务员',role:'客房服务',avatar:'👨',dialogue:[{q:'你送过什么到房间？',a:'晚上9点送了一瓶红酒。',reveal:false},{q:'服务推车是你的？',a:'是的，但今晚别人也用过。',reveal:true}]},{name:'周太太',role:'死者妻子',avatar:'👩',dialogue:[{q:'你当时在哪？',a:'在楼下餐厅用餐，9点半回的房间。',reveal:false},{q:'珠宝你清楚吗？',a:'那些是他送我的，我有照片。',reveal:true}]}],clues:[{id:'c1',name:'空调血迹',desc:'出风口发现微量血迹和纤维',scene:0,hs:'h3'},{id:'c2',name:'监控空白',desc:'走廊监控2:00-2:05有5分钟空白',scene:1,hs:'h4'},{id:'c3',name:'服务推车',desc:'推车上发现微量麻醉剂残留',scene:1,hs:'h5'},{id:'c4',name:'保险箱指纹',desc:'箱面被擦拭过，但有半个指纹',scene:0,hs:'h2'},{id:'c5',name:'门链状态',desc:'门链确实从内侧挂上，无破坏痕迹',scene:0,hs:'h1'}],timeline:[{time:'21:00',event:'李服务员送红酒'},{time:'21:30',event:'周太太离开房间去餐厅'},{time:'2:00',event:'监控出现空白'},{time:'7:00',event:'发现尸体'}],synthesis:[{inputs:['c1','c3'],result:'凶手用麻醉剂通过空调系统作案',title:'作案手法'},{inputs:['c2','c5'],result:'门链是死后被布置的',title:'密室诡计'}],accusation:{suspect:'孙经理',evidence:['c1','c2']},twist:{text:'孙经理利用监控盲区，通过中央空调管道进入房间。先用麻醉气体迷晕周德华，打开保险箱取走珠宝后将其杀害。离开时用特殊工具从门外挂上门链，制造密室假象。',contras:[{text:'监控空白时孙经理声称在值班室',correct:true},{text:'空调出风口血迹与周德华DNA匹配',correct:true},{text:'李服务员承认用过推车但否认进房',correct:false}]},endings:{true:'孙经理被捕，珠宝被追回。酒店加强安保。',false:'案件以入室抢劫悬案处理。'}},
-{id:'case007',num:'007',name:'剧院魅影',diff:'★★★',brief:'首演之夜，女主角在舞台上倒下。毒物来自她的化妆间，但只有三人有钥匙。',briefing:'大剧院首演之夜，女主角苏曼在台上中毒倒地。毒物是氰化物，混在她的润喉糖中。化妆间门锁完好，只有苏曼、导演和化妆师有钥匙。演出期间三人都有不在场证明。',scenes:[{name:'化妆间',layout:'room',hotspots:[{x:50,y:40,r:14,id:'h1',label:'化妆台'},{x:25,y:60,r:10,id:'h2',label:'垃圾桶'},{x:75,y:55,r:10,id:'h3',label:'润喉糖'}]},{name:'后台',layout:'stage',hotspots:[{x:40,y:50,r:12,id:'h4',label:'道具箱'},{x:70,y:35,r:10,id:'h5',label:'服装架'},{x:30,y:75,r:10,id:'h6',label:'紧急出口'}]}],suspects:[{name:'陈导演',role:'导演',avatar:'🎬',dialogue:[{q:'你和苏曼关系如何？',a:'合作多年，她是最好的女主角。',reveal:false},{q:'演出时你在哪？',a:'在控制室盯舞台效果。',reveal:false},{q:'化妆间钥匙你一直带着？',a:'是的，除了彩排时给过别人。',reveal:true}]},{name:'小林',role:'化妆师',avatar:'💄',dialogue:[{q:'你最后见苏曼是什么时候？',a:'上台前10分钟给她补妆。',reveal:false},{q:'润喉糖你见过吗？',a:'她随身带的，我不碰她的东西。',reveal:true}]},{name:'赵副导',role:'副导演',avatar:'📋',dialogue:[{q:'你对苏曼有什么看法？',a:'她演技很好，但太强势了。',reveal:false},{q:'彩排时谁用过化妆间钥匙？',a:'…我不太记得了。',reveal:true}]}],clues:[{id:'c1',name:'润喉糖',desc:'糖盒内发现氰化物残留',scene:0,hs:'h3'},{id:'c2',name:'垃圾桶',desc:'发现一副被丢弃的乳胶手套',scene:0,hs:'h2'},{id:'c3',name:'化妆台',desc:'台面上有不属于苏曼的香水味',scene:0,hs:'h1'},{id:'c4',name:'道具箱',desc:'箱内发现一个空的小瓶',scene:1,hs:'h4'},{id:'c5',name:'紧急出口',desc:'门锁有被撬动的痕迹',scene:1,hs:'h6'}],timeline:[{time:'18:00',event:'苏曼到达化妆间'},{time:'19:00',event:'彩排结束，钥匙归还'},{time:'19:30',event:'小林最后补妆'},{time:'19:50',event:'演出开始'},{time:'20:15',event:'苏曼在台上倒下'}],synthesis:[{inputs:['c1','c4'],result:'毒药被提前藏在道具箱',title:'投毒准备'},{inputs:['c2','c3'],result:'有人趁补妆时调换润喉糖',title:'作案时机'}],accusation:{suspect:'小林',evidence:['c2','c3']},twist:{text:'小林长期被苏曼打压，心生怨恨。她利用补妆机会调换润喉糖，将有毒的糖盒放回化妆台。乳胶手套和香水是她的疏忽。',contras:[{text:'小林声称没碰过苏曼的东西，但手套上有她的DNA',correct:true},{text:'化妆台上的香水与小林使用的一致',correct:true},{text:'赵副导不记得钥匙去向，但他有备用钥匙',correct:false}]},endings:{true:'小林被捕，承认长期被霸凌后冲动杀人。剧院加强安全管理。',false:'案件因证据不足搁置。'}},
-{id:'case008',num:'008',name:'博物馆盗窃',diff:'★★☆',brief:'镇馆之宝在闭馆后失窃，展柜完好无损，警报未触发。三名夜班员工都有嫌疑。',briefing:'市博物馆闭馆后，价值连城的"翡翠凤凰"不翼而飞。展柜玻璃完好，警报系统未触发，监控显示闭馆后无人进出展区。夜班保安、清洁工和管理员三人值班。',scenes:[{name:'展厅',layout:'gallery',hotspots:[{x:50,y:45,r:15,id:'h1',label:'空展柜'},{x:25,y:60,r:10,id:'h2',label:'警报器'},{x:80,y:35,r:10,id:'h3',label:'通风口'}]},{name:'监控室',layout:'control',hotspots:[{x:40,y:50,r:12,id:'h4',label:'监控屏幕'},{x:70,y:60,r:10,id:'h5',label:'录像存储'},{x:30,y:75,r:10,id:'h6',label:'值班日志'}]}],suspects:[{name:'老周',role:'夜班保安',avatar:'👮',dialogue:[{q:'闭馆后你巡查过几次？',a:'10点和凌晨2点各一次。',reveal:false},{q:'展柜警报你清楚吗？',a:'每个展柜都有感应器，触发会报警。',reveal:true}]},{name:'小张',role:'清洁工',avatar:'🧹',dialogue:[{q:'你几点开始工作？',a:'闭馆后就开始，大概8点。',reveal:false},{q:'你清理过展区吗？',a:'是的，但展柜我不碰。',reveal:true}]},{name:'刘管理员',role:'文物管理员',avatar:'📚',dialogue:[{q:'翡翠凤凰你了解吗？',a:'国家一级文物，投保了3亿。',reveal:false},{q:'展柜钥匙谁保管？',a:'只有我和馆长有。',reveal:true}]}],clues:[{id:'c1',name:'展柜',desc:'玻璃完好，锁具无破坏痕迹',scene:0,hs:'h1'},{id:'c2',name:'警报器',desc:'系统正常，未被触发过',scene:0,hs:'h2'},{id:'c3',name:'通风口',desc:'灰尘有被扰动的痕迹',scene:0,hs:'h3'},{id:'c4',name:'监控录像',desc:'录像显示一切正常，无异常',scene:1,hs:'h4'},{id:'c5',name:'值班日志',desc:'三人签字时间正常',scene:1,hs:'h6'}],timeline:[{time:'18:00',event:'博物馆闭馆'},{time:'20:00',event:'小张开始清洁'},{time:'22:00',event:'老周第一次巡查'},{time:'2:00',event:'老周第二次巡查'},{time:'7:00',event:'开馆发现失窃'}],synthesis:[{inputs:['c1','c2'],result:'文物从展柜内部被取出',title:'内部作案'},{inputs:['c3','c4'],result:'通风口是进出通道',title:'秘密路径'}],accusation:{suspect:'刘管理员',evidence:['c1','c3']},twist:{text:'刘管理员利用职务之便，提前复制展柜钥匙。闭馆后从通风管道进入展厅，打开展柜取走文物，再从通风口离开。监控被他在值班时做了手脚。',contras:[{text:'展柜完好说明有钥匙或复制品',correct:true},{text:'通风口灰尘被扰动但监控未拍到',correct:true},{text:'小张清洁时接触过展区',correct:false}]},endings:{true:'刘管理员被捕，文物在黑市交易前被追回。博物馆升级安保。',false:'文物被转移出境，案件悬而未决。'}},
-{id:'case009',num:'009',name:'游轮迷案',diff:'★★★',brief:'豪华游轮航行途中，一名乘客失踪。甲板监控无异常，但救生艇少了一艘。',briefing:'豪华游轮"海洋之星"从上海驶往日本，乘客王建国在航行第二晚失踪。甲板监控显示他最后出现在顶层甲板，之后无任何影像。但救生艇数量少了一艘，且失踪者舱房内有打斗痕迹。',scenes:[{name:'客舱',layout:'cabin',hotspots:[{x:50,y:50,r:14,id:'h1',label:'打斗痕迹'},{x:25,y:35,r:10,id:'h2',label:'保险箱'},{x:75,y:65,r:10,id:'h3',label:'阳台'}]},{name:'甲板',layout:'deck',hotspots:[{x:40,y:40,r:12,id:'h4',label:'监控位置'},{x:70,y:55,r:10,id:'h5',label:'救生艇'},{x:30,y:75,r:10,id:'h6',label:'栏杆'}]}],suspects:[{name:'赵船长',role:'船长',avatar:'⚓',dialogue:[{q:'航线有变化吗？',a:'没有，按原定路线行驶。',reveal:false},{q:'救生艇你清楚吗？',a:'每艘都有编号，少的是3号艇。',reveal:true}]},{name:'李服务员',role:'客房服务',avatar:'🍽️',dialogue:[{q:'你最后见王先生是什么时候？',a:'昨晚送晚餐，大概8点。',reveal:false},{q:'他有什么异常吗？',a:'他接了个电话后很紧张。',reveal:true}]},{name:'孙女士',role:'同行旅伴',avatar:'👩',dialogue:[{q:'你和王先生什么关系？',a:'生意伙伴，一起出来谈合作。',reveal:false},{q:'昨晚你在哪？',a:'在房间，9点就睡了。',reveal:true}]}],clues:[{id:'c1',name:'打斗痕迹',desc:'舱房内有物品翻倒和血迹',scene:0,hs:'h1'},{id:'c2',name:'保险箱',desc:'被打开，文件被取走',scene:0,hs:'h2'},{id:'c3',name:'阳台',desc:'栏杆上有新鲜刮痕',scene:0,hs:'h3'},{id:'c4',name:'监控',desc:'甲板监控显示王先生独自走向船尾',scene:1,hs:'h4'},{id:'c5',name:'救生艇',desc:'3号艇不见，投放记录为空',scene:1,hs:'h5'}],timeline:[{time:'20:00',event:'李服务员送晚餐'},{time:'20:30',event:'王先生接电话后紧张'},{time:'21:00',event:'监控拍到王先生走向船尾'},{time:'22:00',event:'孙女士声称已入睡'},{time:'7:00',event:'发现王先生失踪'}],synthesis:[{inputs:['c1','c4'],result:'王先生被胁迫或跟随某人到甲板',title:'失踪过程'},{inputs:['c3','c5'],result:'有人用救生艇离开',title:'逃脱方式'}],accusation:{suspect:'孙女士',evidence:['c1','c2']},twist:{text:'孙女士与王先生有巨额商业纠纷。她趁夜色将王先生引至甲板，争执中将其推入海中。随后用救生艇返回，伪造不在场证明。',contras:[{text:'孙女士声称9点入睡，但监控显示她10点出现在甲板',correct:true},{text:'保险箱文件是商业合同，孙女士有动机',correct:true},{text:'李服务员送餐后接触过王先生',correct:false}]},endings:{true:'孙女士被捕，承认因商业纠纷杀人。游轮加强安全监控。',false:'王先生被认定意外落水，案件结案。'}},
-{id:'case010',num:'010',name:'古宅惊魂',diff:'★★★',brief:'百年古宅翻修时，工人发现一具白骨。DNA比对显示死者是20年前失踪的宅主。',briefing:'郊外百年古宅翻修时，工人在墙内发现一具白骨。DNA比对确认是20年前失踪的宅主陈老太。当年陈老太独居，失踪后由侄子继承房产。三名嫌疑人：侄子、邻居、当年负责案件的警察。',scenes:[{name:'古宅客厅',layout:'old',hotspots:[{x:50,y:50,r:15,id:'h1',label:'发现白骨的墙'},{x:25,y:35,r:10,id:'h2',label:'老照片'},{x:80,y:60,r:10,id:'h3',label:'地窖入口'}]},{name:'翻修工地',layout:'site',hotspots:[{x:40,y:45,r:12,id:'h4',label:'施工工具'},{x:70,y:65,r:10,id:'h5',label:'建材堆'},{x:30,y:75,r:10,id:'h6',label:'工人休息区'}]}],suspects:[{name:'陈侄子',role:'房产继承人',avatar:'👨',dialogue:[{q:'你姑姑失踪时你在哪？',a:'在外地出差，回来才知道。',reveal:false},{q:'你继承了房产？',a:'是的，按规定继承的。',reveal:true}]},{name:'王邻居',role:'隔壁邻居',avatar:'👵',dialogue:[{q:'你最后见陈老太是什么时候？',a:'20年前，她说不舒服要休息。',reveal:false},{q:'当晚有异常吗？',a:'…我好像听到争吵声。',reveal:true}]},{name:'张警察',role:'退休警察',avatar:'👮',dialogue:[{q:'当年案件你怎么看？',a:'应该是离家出走，没找到尸体。',reveal:false},{q:'你走访过邻居吗？',a:'走访过，但没发现异常。',reveal:true}]}],clues:[{id:'c1',name:'白骨',desc:'墙内白骨，头部有钝器伤',scene:0,hs:'h1'},{id:'c2',name:'老照片',desc:'照片中有陈老太和侄子争吵的场景',scene:0,hs:'h2'},{id:'c3',name:'地窖',desc:'地窖内发现血迹和旧衣物',scene:0,hs:'h3'},{id:'c4',name:'施工记录',desc:'翻修发现墙体有二次砌筑痕迹',scene:1,hs:'h4'},{id:'c5',name:'工人证言',desc:'工人说砌墙时发现有头发',scene:1,hs:'h6'}],timeline:[{time:'20年前',event:'陈老太失踪'},{time:'19年前',event:'侄子继承房产'},{time:'1个月前',event:'开始翻修'},{time:'3天前',event:'发现白骨'}],synthesis:[{inputs:['c1','c4'],result:'陈老太被杀后砌入墙中',title:'藏尸方式'},{inputs:['c2','c3'],result:'侄子有杀人动机',title:'遗产纠纷'}],accusation:{suspect:'陈侄子',evidence:['c1','c2']},twist:{text:'陈侄子因赌债急需钱，向姑姑借钱被拒后将其杀害。他趁夜砌墙藏尸，伪造姑姑离家出走假象，最终继承房产。',contras:[{text:'陈侄子声称在外地，但邻居看到他当晚在',correct:true},{text:'墙体二次砌筑说明凶手熟悉房屋结构',correct:true},{text:'王邻居听到争吵但没报警',correct:false}]},endings:{true:'陈侄子被捕，承认因赌债杀人。古宅被拆除，建成纪念花园。',false:'案件因年代久远证据不足，无法起诉。'}}
+{id:'case004',num:'004',name:'校园谜案',diff:3,brief:'晚自习后实验室爆炸，学生重伤。监控显示无人进出，现场却有陌生指纹。',briefing:'晚自习后化学实验室爆炸，学生林小雨昏迷。门从内反锁，监控无人进出，但有陌生指纹。',scenes:[{name:'走廊',layout:'room',hotspots:[{x:30,y:40,r:12,id:'h1',label:'破碎的门'},{x:70,y:30,r:10,id:'h2',label:'监控'},{x:50,y:70,r:14,id:'h3',label:'碎片'}]},{name:'实验室',layout:'lab',hotspots:[{x:40,y:50,r:15,id:'h4',label:'爆炸点'},{x:75,y:35,r:10,id:'h5',label:'化学柜'},{x:20,y:65,r:10,id:'h6',label:'通风管'}]}],suspects:[{name:'王老师',role:'化学老师',avatar:'👨‍🏫',dialogue:[{q:'爆炸时你在哪？',a:'在办公室批改作业。',reveal:false},{q:'实验室钥匙有几把？',a:'两把，我和教务处各一把。',reveal:true}]},{name:'张同学',role:'同桌',avatar:'👦',dialogue:[{q:'今晚见过林小雨吗？',a:'晚自习后就回宿舍了。',reveal:false},{q:'有人看到你接近实验室？',a:'…我去拿过忘在那的书。',reveal:true}]},{name:'李校工',role:'后勤',avatar:'👴',dialogue:[{q:'今晚巡查有异常吗？',a:'通风管道好像被打开过。',reveal:true},{q:'你懂化学吗？',a:'不懂，但儿子在化工厂。',reveal:false}]}],clues:[{id:'c1',name:'陌生指纹',desc:'门把手上的指纹，不属于在校师生',scene:0,hs:'h1'},{id:'c2',name:'监控录像',desc:'爆炸前30分钟无人进出',scene:0,hs:'h2'},{id:'c3',name:'化学残留',desc:'含高浓度硝酸铵',scene:1,hs:'h4'},{id:'c4',name:'通风管痕迹',desc:'螺丝被拧动过',scene:1,hs:'h6'},{id:'c5',name:'手机',desc:'最后消息发给"那个人"',scene:0,hs:'h3'}],timeline:[{time:'20:30',event:'晚自习结束'},{time:'20:45',event:'最后离开教学楼'},{time:'21:10',event:'爆炸发生'}],synthesis:[{inputs:['c1','c4'],result:'有人从通风管进入',title:'入侵路径'},{inputs:['c3','c5'],result:'林小雨知道爆炸计划',title:'知情者'}],accusation:{suspect:'李校工',evidence:['c1','c4']},twist:{text:'李校工受儿子指使，从通风管进入制造爆炸，销毁学校违规存放危化品的记录。林小雨无意发现真相遭灭口。',contras:[{text:'李校工不懂化学，但儿子在化工厂',correct:true},{text:'通风管可绕过监控',correct:true},{text:'张同学没去过实验室',correct:false}]},endings:{true:'李校工父子被捕，学校违规曝光，校长辞职。',false:'案件陷入僵局。'}},
+{id:'case005',num:'005',name:'医院疑云',diff:3,brief:'ICU患者突然死亡，护士称全程监控，体内却检出致命药物。',briefing:'ICU患者赵明远凌晨3点死亡。护士刘芳称全程未离开，但尸检发现致命剂量氯化钾。监控显示2:30-3:00有三人进出。',scenes:[{name:'ICU病房',layout:'hospital',hotspots:[{x:50,y:50,r:15,id:'h1',label:'病床'},{x:20,y:30,r:10,id:'h2',label:'输液架'},{x:80,y:40,r:10,id:'h3',label:'监护仪'}]},{name:'护士站',layout:'desk',hotspots:[{x:40,y:45,r:12,id:'h4',label:'值班记录'},{x:70,y:60,r:10,id:'h5',label:'药品柜'},{x:30,y:75,r:10,id:'h6',label:'垃圾桶'}]}],suspects:[{name:'刘护士',role:'值班护士',avatar:'👩‍⚕️',dialogue:[{q:'2:30到3:00你在做什么？',a:'在护士站值班，偶尔查看病人。',reveal:false},{q:'你和赵明远认识吗？',a:'…三年前我照顾过他。',reveal:true}]},{name:'陈医生',role:'主治医生',avatar:'👨‍⚕️',dialogue:[{q:'赵明远病情如何？',a:'在好转，预计下周转出ICU。',reveal:false},{q:'你开过氯化钾处方吗？',a:'没有，他不需要那种药。',reveal:true}]},{name:'赵太太',role:'妻子',avatar:'👩',dialogue:[{q:'你今晚来过医院吗？',a:'2:50到的，看了一眼就走了。',reveal:false},{q:'你丈夫有保险吗？',a:'…有，一份巨额意外险。',reveal:true}]}],clues:[{id:'c1',name:'输液残留',desc:'残液中检出高浓度氯化钾',scene:0,hs:'h2'},{id:'c2',name:'值班记录',desc:'刘护士2:45巡查记录',scene:1,hs:'h4'},{id:'c3',name:'丢弃手套',desc:'垃圾桶内带血渍的乳胶手套',scene:1,hs:'h6'},{id:'c4',name:'监护仪数据',desc:'3:00停止，之前心率已异常',scene:0,hs:'h3'},{id:'c5',name:'药品记录',desc:'氯化钾少了2支',scene:1,hs:'h5'}],timeline:[{time:'2:30',event:'刘护士进入病区'},{time:'2:40',event:'陈医生查房'},{time:'2:50',event:'赵太太到达'},{time:'3:00',event:'赵明远死亡'}],synthesis:[{inputs:['c1','c5'],result:'氯化钾被注入输液袋',title:'投毒方式'},{inputs:['c3','c4'],result:'巡查记录被伪造',title:'时间矛盾'}],accusation:{suspect:'刘护士',evidence:['c1','c2']},twist:{text:'刘护士三年前照顾赵明远时，赵的疏忽致其父去世。她利用值班在输液袋注入氯化钾，伪造巡查记录。',contras:[{text:'刘护士称在护士站，但记录显示她进入病房',correct:true},{text:'陈医生查房时病人活着，但心率2:35已异常',correct:true},{text:'赵太太只看了一眼，手套上有她DNA',correct:false}]},endings:{true:'刘护士被捕，承认复仇。医院加强管理。',false:'案件以医疗事故结案。'}},
+{id:'case006',num:'006',name:'酒店密室',diff:4,brief:'五星级酒店套房内，富商被发现死在反锁的房间中。窗户紧闭，空调出风口却有挣扎痕迹。',briefing:'五星酒店总统套房，富商周德华死于反锁房内。门链从内挂上，窗户密封完好。空调出风口发现微量血迹，房内保险箱被打开，价值千万的珠宝不翼而飞。',scenes:[{name:'总统套房',layout:'suite',hotspots:[{x:50,y:50,r:15,id:'h1',label:'尸体位置'},{x:25,y:30,r:10,id:'h2',label:'保险箱'},{x:80,y:25,r:10,id:'h3',label:'空调出风口'}]},{name:'酒店走廊',layout:'hall',hotspots:[{x:40,y:50,r:12,id:'h4',label:'走廊监控'},{x:70,y:60,r:10,id:'h5',label:'服务推车'},{x:30,y:75,r:10,id:'h6',label:'消防通道'}]}],suspects:[{name:'孙经理',role:'酒店经理',avatar:'🤵',dialogue:[{q:'谁有套房钥匙？',a:'只有我和前台，都有记录。',reveal:false},{q:'监控有异常吗？',a:'走廊监控在2点有5分钟空白。',reveal:true}]},{name:'李服务员',role:'客房服务',avatar:'👨',dialogue:[{q:'你送过什么到房间？',a:'晚上9点送了一瓶红酒。',reveal:false},{q:'服务推车是你的？',a:'是的，但今晚别人也用过。',reveal:true}]},{name:'周太太',role:'死者妻子',avatar:'👩',dialogue:[{q:'你当时在哪？',a:'在楼下餐厅用餐，9点半回的房间。',reveal:false},{q:'珠宝你清楚吗？',a:'那些是他送我的，我有照片。',reveal:true}]}],clues:[{id:'c1',name:'空调血迹',desc:'出风口发现微量血迹和纤维',scene:0,hs:'h3'},{id:'c2',name:'监控空白',desc:'走廊监控2:00-2:05有5分钟空白',scene:1,hs:'h4'},{id:'c3',name:'服务推车',desc:'推车上发现微量麻醉剂残留',scene:1,hs:'h5'},{id:'c4',name:'保险箱指纹',desc:'箱面被擦拭过，但有半个指纹',scene:0,hs:'h2'},{id:'c5',name:'门链状态',desc:'门链确实从内侧挂上，无破坏痕迹',scene:0,hs:'h1'}],timeline:[{time:'21:00',event:'李服务员送红酒'},{time:'21:30',event:'周太太离开房间去餐厅'},{time:'2:00',event:'监控出现空白'},{time:'7:00',event:'发现尸体'}],synthesis:[{inputs:['c1','c3'],result:'凶手用麻醉剂通过空调系统作案',title:'作案手法'},{inputs:['c2','c5'],result:'门链是死后被布置的',title:'密室诡计'}],accusation:{suspect:'孙经理',evidence:['c1','c2']},twist:{text:'孙经理利用监控盲区，通过中央空调管道进入房间。先用麻醉气体迷晕周德华，打开保险箱取走珠宝后将其杀害。离开时用特殊工具从门外挂上门链，制造密室假象。',contras:[{text:'监控空白时孙经理声称在值班室',correct:true},{text:'空调出风口血迹与周德华DNA匹配',correct:true},{text:'李服务员承认用过推车但否认进房',correct:false}]},endings:{true:'孙经理被捕，珠宝被追回。酒店加强安保。',false:'案件以入室抢劫悬案处理。'}},
+{id:'case007',num:'007',name:'剧院魅影',diff:4,brief:'首演之夜，女主角在舞台上倒下。毒物来自她的化妆间，但只有三人有钥匙。',briefing:'大剧院首演之夜，女主角苏曼在台上中毒倒地。毒物是氰化物，混在她的润喉糖中。化妆间门锁完好，只有苏曼、导演和化妆师有钥匙。演出期间三人都有不在场证明。',scenes:[{name:'化妆间',layout:'room',hotspots:[{x:50,y:40,r:14,id:'h1',label:'化妆台'},{x:25,y:60,r:10,id:'h2',label:'垃圾桶'},{x:75,y:55,r:10,id:'h3',label:'润喉糖'}]},{name:'后台',layout:'stage',hotspots:[{x:40,y:50,r:12,id:'h4',label:'道具箱'},{x:70,y:35,r:10,id:'h5',label:'服装架'},{x:30,y:75,r:10,id:'h6',label:'紧急出口'}]}],suspects:[{name:'陈导演',role:'导演',avatar:'🎬',dialogue:[{q:'你和苏曼关系如何？',a:'合作多年，她是最好的女主角。',reveal:false},{q:'演出时你在哪？',a:'在控制室盯舞台效果。',reveal:false},{q:'化妆间钥匙你一直带着？',a:'是的，除了彩排时给过别人。',reveal:true}]},{name:'小林',role:'化妆师',avatar:'💄',dialogue:[{q:'你最后见苏曼是什么时候？',a:'上台前10分钟给她补妆。',reveal:false},{q:'润喉糖你见过吗？',a:'她随身带的，我不碰她的东西。',reveal:true}]},{name:'赵副导',role:'副导演',avatar:'📋',dialogue:[{q:'你对苏曼有什么看法？',a:'她演技很好，但太强势了。',reveal:false},{q:'彩排时谁用过化妆间钥匙？',a:'…我不太记得了。',reveal:true}]}],clues:[{id:'c1',name:'润喉糖',desc:'糖盒内发现氰化物残留',scene:0,hs:'h3'},{id:'c2',name:'垃圾桶',desc:'发现一副被丢弃的乳胶手套',scene:0,hs:'h2'},{id:'c3',name:'化妆台',desc:'台面上有不属于苏曼的香水味',scene:0,hs:'h1'},{id:'c4',name:'道具箱',desc:'箱内发现一个空的小瓶',scene:1,hs:'h4'},{id:'c5',name:'紧急出口',desc:'门锁有被撬动的痕迹',scene:1,hs:'h6'}],timeline:[{time:'18:00',event:'苏曼到达化妆间'},{time:'19:00',event:'彩排结束，钥匙归还'},{time:'19:30',event:'小林最后补妆'},{time:'19:50',event:'演出开始'},{time:'20:15',event:'苏曼在台上倒下'}],synthesis:[{inputs:['c1','c4'],result:'毒药被提前藏在道具箱',title:'投毒准备'},{inputs:['c2','c3'],result:'有人趁补妆时调换润喉糖',title:'作案时机'}],accusation:{suspect:'小林',evidence:['c2','c3']},twist:{text:'小林长期被苏曼打压，心生怨恨。她利用补妆机会调换润喉糖，将有毒的糖盒放回化妆台。乳胶手套和香水是她的疏忽。',contras:[{text:'小林声称没碰过苏曼的东西，但手套上有她的DNA',correct:true},{text:'化妆台上的香水与小林使用的一致',correct:true},{text:'赵副导不记得钥匙去向，但他有备用钥匙',correct:false}]},endings:{true:'小林被捕，承认长期被霸凌后冲动杀人。剧院加强安全管理。',false:'案件因证据不足搁置。'}},
+{id:'case008',num:'008',name:'博物馆盗窃',diff:4,brief:'镇馆之宝在闭馆后失窃，展柜完好无损，警报未触发。三名夜班员工都有嫌疑。',briefing:'市博物馆闭馆后，价值连城的"翡翠凤凰"不翼而飞。展柜玻璃完好，警报系统未触发，监控显示闭馆后无人进出展区。夜班保安、清洁工和管理员三人值班。',scenes:[{name:'展厅',layout:'gallery',hotspots:[{x:50,y:45,r:15,id:'h1',label:'空展柜'},{x:25,y:60,r:10,id:'h2',label:'警报器'},{x:80,y:35,r:10,id:'h3',label:'通风口'}]},{name:'监控室',layout:'control',hotspots:[{x:40,y:50,r:12,id:'h4',label:'监控屏幕'},{x:70,y:60,r:10,id:'h5',label:'录像存储'},{x:30,y:75,r:10,id:'h6',label:'值班日志'}]}],suspects:[{name:'老周',role:'夜班保安',avatar:'👮',dialogue:[{q:'闭馆后你巡查过几次？',a:'10点和凌晨2点各一次。',reveal:false},{q:'展柜警报你清楚吗？',a:'每个展柜都有感应器，触发会报警。',reveal:true}]},{name:'小张',role:'清洁工',avatar:'🧹',dialogue:[{q:'你几点开始工作？',a:'闭馆后就开始，大概8点。',reveal:false},{q:'你清理过展区吗？',a:'是的，但展柜我不碰。',reveal:true}]},{name:'刘管理员',role:'文物管理员',avatar:'📚',dialogue:[{q:'翡翠凤凰你了解吗？',a:'国家一级文物，投保了3亿。',reveal:false},{q:'展柜钥匙谁保管？',a:'只有我和馆长有。',reveal:true}]}],clues:[{id:'c1',name:'展柜',desc:'玻璃完好，锁具无破坏痕迹',scene:0,hs:'h1'},{id:'c2',name:'警报器',desc:'系统正常，未被触发过',scene:0,hs:'h2'},{id:'c3',name:'通风口',desc:'灰尘有被扰动的痕迹',scene:0,hs:'h3'},{id:'c4',name:'监控录像',desc:'录像显示一切正常，无异常',scene:1,hs:'h4'},{id:'c5',name:'值班日志',desc:'三人签字时间正常',scene:1,hs:'h6'}],timeline:[{time:'18:00',event:'博物馆闭馆'},{time:'20:00',event:'小张开始清洁'},{time:'22:00',event:'老周第一次巡查'},{time:'2:00',event:'老周第二次巡查'},{time:'7:00',event:'开馆发现失窃'}],synthesis:[{inputs:['c1','c2'],result:'文物从展柜内部被取出',title:'内部作案'},{inputs:['c3','c4'],result:'通风口是进出通道',title:'秘密路径'}],accusation:{suspect:'刘管理员',evidence:['c1','c3']},twist:{text:'刘管理员利用职务之便，提前复制展柜钥匙。闭馆后从通风管道进入展厅，打开展柜取走文物，再从通风口离开。监控被他在值班时做了手脚。',contras:[{text:'展柜完好说明有钥匙或复制品',correct:true},{text:'通风口灰尘被扰动但监控未拍到',correct:true},{text:'小张清洁时接触过展区',correct:false}]},endings:{true:'刘管理员被捕，文物在黑市交易前被追回。博物馆升级安保。',false:'文物被转移出境，案件悬而未决。'}},
+{id:'case009',num:'009',name:'游轮迷案',diff:5,brief:'豪华游轮航行途中，一名乘客失踪。甲板监控无异常，但救生艇少了一艘。',briefing:'豪华游轮"海洋之星"从上海驶往日本，乘客王建国在航行第二晚失踪。甲板监控显示他最后出现在顶层甲板，之后无任何影像。但救生艇数量少了一艘，且失踪者舱房内有打斗痕迹。',scenes:[{name:'客舱',layout:'cabin',hotspots:[{x:50,y:50,r:14,id:'h1',label:'打斗痕迹'},{x:25,y:35,r:10,id:'h2',label:'保险箱'},{x:75,y:65,r:10,id:'h3',label:'阳台'}]},{name:'甲板',layout:'deck',hotspots:[{x:40,y:40,r:12,id:'h4',label:'监控位置'},{x:70,y:55,r:10,id:'h5',label:'救生艇'},{x:30,y:75,r:10,id:'h6',label:'栏杆'}]}],suspects:[{name:'赵船长',role:'船长',avatar:'⚓',dialogue:[{q:'航线有变化吗？',a:'没有，按原定路线行驶。',reveal:false},{q:'救生艇你清楚吗？',a:'每艘都有编号，少的是3号艇。',reveal:true}]},{name:'李服务员',role:'客房服务',avatar:'🍽️',dialogue:[{q:'你最后见王先生是什么时候？',a:'昨晚送晚餐，大概8点。',reveal:false},{q:'他有什么异常吗？',a:'他接了个电话后很紧张。',reveal:true}]},{name:'孙女士',role:'同行旅伴',avatar:'👩',dialogue:[{q:'你和王先生什么关系？',a:'生意伙伴，一起出来谈合作。',reveal:false},{q:'昨晚你在哪？',a:'在房间，9点就睡了。',reveal:true}]}],clues:[{id:'c1',name:'打斗痕迹',desc:'舱房内有物品翻倒和血迹',scene:0,hs:'h1'},{id:'c2',name:'保险箱',desc:'被打开，文件被取走',scene:0,hs:'h2'},{id:'c3',name:'阳台',desc:'栏杆上有新鲜刮痕',scene:0,hs:'h3'},{id:'c4',name:'监控',desc:'甲板监控显示王先生独自走向船尾',scene:1,hs:'h4'},{id:'c5',name:'救生艇',desc:'3号艇不见，投放记录为空',scene:1,hs:'h5'}],timeline:[{time:'20:00',event:'李服务员送晚餐'},{time:'20:30',event:'王先生接电话后紧张'},{time:'21:00',event:'监控拍到王先生走向船尾'},{time:'22:00',event:'孙女士声称已入睡'},{time:'7:00',event:'发现王先生失踪'}],synthesis:[{inputs:['c1','c4'],result:'王先生被胁迫或跟随某人到甲板',title:'失踪过程'},{inputs:['c3','c5'],result:'有人用救生艇离开',title:'逃脱方式'}],accusation:{suspect:'孙女士',evidence:['c1','c2']},twist:{text:'孙女士与王先生有巨额商业纠纷。她趁夜色将王先生引至甲板，争执中将其推入海中。随后用救生艇返回，伪造不在场证明。',contras:[{text:'孙女士声称9点入睡，但监控显示她10点出现在甲板',correct:true},{text:'保险箱文件是商业合同，孙女士有动机',correct:true},{text:'李服务员送餐后接触过王先生',correct:false}]},endings:{true:'孙女士被捕，承认因商业纠纷杀人。游轮加强安全监控。',false:'王先生被认定意外落水，案件结案。'}},
+{id:'case010',num:'010',name:'古宅惊魂',diff:5,brief:'百年古宅翻修时，工人发现一具白骨。DNA比对显示死者是20年前失踪的宅主。',briefing:'郊外百年古宅翻修时，工人在墙内发现一具白骨。DNA比对确认是20年前失踪的宅主陈老太。当年陈老太独居，失踪后由侄子继承房产。三名嫌疑人：侄子、邻居、当年负责案件的警察。',scenes:[{name:'古宅客厅',layout:'old',hotspots:[{x:50,y:50,r:15,id:'h1',label:'发现白骨的墙'},{x:25,y:35,r:10,id:'h2',label:'老照片'},{x:80,y:60,r:10,id:'h3',label:'地窖入口'}]},{name:'翻修工地',layout:'site',hotspots:[{x:40,y:45,r:12,id:'h4',label:'施工工具'},{x:70,y:65,r:10,id:'h5',label:'建材堆'},{x:30,y:75,r:10,id:'h6',label:'工人休息区'}]}],suspects:[{name:'陈侄子',role:'房产继承人',avatar:'👨',dialogue:[{q:'你姑姑失踪时你在哪？',a:'在外地出差，回来才知道。',reveal:false},{q:'你继承了房产？',a:'是的，按规定继承的。',reveal:true}]},{name:'王邻居',role:'隔壁邻居',avatar:'👵',dialogue:[{q:'你最后见陈老太是什么时候？',a:'20年前，她说不舒服要休息。',reveal:false},{q:'当晚有异常吗？',a:'…我好像听到争吵声。',reveal:true}]},{name:'张警察',role:'退休警察',avatar:'👮',dialogue:[{q:'当年案件你怎么看？',a:'应该是离家出走，没找到尸体。',reveal:false},{q:'你走访过邻居吗？',a:'走访过，但没发现异常。',reveal:true}]}],clues:[{id:'c1',name:'白骨',desc:'墙内白骨，头部有钝器伤',scene:0,hs:'h1'},{id:'c2',name:'老照片',desc:'照片中有陈老太和侄子争吵的场景',scene:0,hs:'h2'},{id:'c3',name:'地窖',desc:'地窖内发现血迹和旧衣物',scene:0,hs:'h3'},{id:'c4',name:'施工记录',desc:'翻修发现墙体有二次砌筑痕迹',scene:1,hs:'h4'},{id:'c5',name:'工人证言',desc:'工人说砌墙时发现有头发',scene:1,hs:'h6'}],timeline:[{time:'20年前',event:'陈老太失踪'},{time:'19年前',event:'侄子继承房产'},{time:'1个月前',event:'开始翻修'},{time:'3天前',event:'发现白骨'}],synthesis:[{inputs:['c1','c4'],result:'陈老太被杀后砌入墙中',title:'藏尸方式'},{inputs:['c2','c3'],result:'侄子有杀人动机',title:'遗产纠纷'}],accusation:{suspect:'陈侄子',evidence:['c1','c2']},twist:{text:'陈侄子因赌债急需钱，向姑姑借钱被拒后将其杀害。他趁夜砌墙藏尸，伪造姑姑离家出走假象，最终继承房产。',contras:[{text:'陈侄子声称在外地，但邻居看到他当晚在',correct:true},{text:'墙体二次砌筑说明凶手熟悉房屋结构',correct:true},{text:'王邻居听到争吵但没报警',correct:false}]},endings:{true:'陈侄子被捕，承认因赌债杀人。古宅被拆除，建成纪念花园。',false:'案件因年代久远证据不足，无法起诉。'}}
 ];
 
 /* ===== STATE ===== */
-let G={screen:'menu',ci:-1,tab:'scene',clues:[],dlog:{},usedQ:{},tlPlace:{},synthDone:[],accSt:{suspect:null,evidence:[]},insight:3,hints:0,stars:{},ach:{},revFound:{},twist:false,selPool:null,selSynth:[0,null,null],synthSlot:1,evPick:false,curSc:0,inter:null,dlgLog:[],clueFilter:'全部',endType:null,slot:0};
+let G={screen:'menu',ci:-1,tab:'scene',clues:[],dlog:{},usedQ:{},tlPlace:{},synthDone:[],accSt:{suspect:null,evidence:[]},insight:3,hints:0,stars:{},ach:{},revFound:{},twist:false,selPool:null,selSynth:[0,null,null],synthSlot:1,evPick:false,curSc:0,inter:null,dlgLog:[],clueFilter:'全部',endType:null,slot:0,tutorialShown:false};
 let settings={sfx:true,bgm:true};
 function saveSettings(){try{localStorage.setItem('det_settings',JSON.stringify(settings))}catch(e){}}
 function loadSettings(){try{let d=JSON.parse(localStorage.getItem('det_settings'));if(d)Object.assign(settings,d)}catch(e){}}
@@ -586,8 +589,25 @@ function addClue(id){if(!G.clues.includes(id)){G.clues.push(id);save();return tr
 function caseClueCount(){let c=CC2();return c?G.clues.filter(id=>c.clues.find(x=>x.id===id)).length:0}
 function caseClueTotal(){let c=CC2();return c?c.clues.length:0}
 
+/* ===== AUDIO ===== */
+const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+function playSound(type){
+  if(!settings.sfx)return;
+  try{
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.connect(gain);gain.connect(audioCtx.destination);
+    if(type==='clue'){osc.frequency.value=800;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.2);}
+    else if(type==='ok'){osc.frequency.value=1000;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.3);}
+    else if(type==='warn'){osc.frequency.value=400;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.15);}
+    else if(type==='twist'){osc.frequency.value=600;osc.frequency.exponentialRampToValueAtTime(300,audioCtx.currentTime+0.5);gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.5);}
+    osc.start(audioCtx.currentTime);osc.stop(audioCtx.currentTime+0.5);
+  }catch(e){}
+}
+
 /* ===== UI HELPERS ===== */
 function toast(msg,type='clue'){
+  playSound(type==='ok'?'ok':type==='twist'?'twist':type==='warn'?'warn':'clue');
   let el=document.createElement('div');el.className=`toast toast-${type}`;
   el.innerHTML=`${S(type==='ok'?'i-check':type==='twist'?'i-exclaim':type==='warn'?'i-exclaim':'i-key',16)}<span>${msg}</span>`;
   document.getElementById('toasts').appendChild(el);
@@ -599,6 +619,50 @@ function showModal(title,body,footer=''){
 }
 function closeModal(){document.getElementById('modal-ov').classList.remove('show')}
 document.getElementById('modal-ov').addEventListener('click',e=>{if(e.target.id==='modal-ov')closeModal()});
+
+/* ===== HINT SYSTEM ===== */
+function showHint(){
+  if(G.insight<=0){toast('洞察点已用完','warn');return}
+  let c=CC2();if(!c)return;
+  let hints=[];
+  if(G.tab==='scene'){
+    let sc=c.scenes[G.curSc];
+    let unexplored=sc.hotspots.filter(h=>h.clues.some(cl=>!hasClue(cl)));
+    if(unexplored.length>0)hints.push(`场景中还有${unexplored.length}个可疑点未调查`);
+  }else if(G.tab==='suspect'){
+    let uninterrogated=c.suspects.filter(s=>!G.usedQ[s.id]||G.usedQ[s.id].length===0);
+    if(uninterrogated.length>0)hints.push(`还有${uninterrogated.length}位嫌疑人未询问`);
+  }else if(G.tab==='timeline'){
+    let pl=G.tlPlace[c.id]||{};
+    let placed=Object.keys(pl).length;
+    let total=c.timeline.events.length;
+    if(placed<total)hints.push(`时间线还有${total-placed}个事件未放置`);
+  }else if(G.tab==='clues'){
+    let available=c.synthesis.filter(sy=>!G.synthDone.includes(sy.input.slice().sort().join(',')));
+    if(available.length>0)hints.push(`还有${available.length}组合成线索可发现`);
+  }else if(G.tab==='accuse'){
+    if(!G.accSt.suspect)hints.push('选择你认为的凶手');
+    else if(G.accSt.evidence.length<2)hints.push('至少选择2条关键证据');
+  }
+  if(hints.length===0)hints.push('继续探索，真相就在眼前');
+  G.insight--;G.hints++;save();
+  showModal(`${S('i-bulb',18)} 洞察提示`,`<p style="line-height:1.8">${hints[0]}</p><p style="font-size:12px;color:#9aa0a6;margin-top:12px">剩余洞察点：${G.insight}</p>`,`<button class="modal-btn" onclick="closeModal();render()">确定</button>`);
+}
+
+function showTutorial(){
+  let tutorial=`
+    <div style="line-height:1.8;font-size:13px">
+      <div style="margin-bottom:12px"><strong style="color:#d4a017">🔍 场景调查</strong><br>点击发光热点收集线索，注意隐藏区域</div>
+      <div style="margin-bottom:12px"><strong style="color:#d4a017">💬 审讯嫌疑人</strong><br>通过对话和出示证据获取口供，发现矛盾</div>
+      <div style="margin-bottom:12px"><strong style="color:#d4a017">⏰ 时间线</strong><br>将事件按正确顺序排列，还原案发经过</div>
+      <div style="margin-bottom:12px"><strong style="color:#d4a017">🧩 线索合成</strong><br>组合相关线索，推导关键推理</div>
+      <div style="margin-bottom:12px"><strong style="color:#d4a017">⚖️ 指认凶手</strong><br>选择嫌疑人和证据，提交你的推理</div>
+      <div style="margin-bottom:12px"><strong style="color:#d4a017">💡 洞察系统</strong><br>卡关时消耗洞察点获取提示（共3点）</div>
+      <div><strong style="color:#d4a017">🎯 真相不止一层</strong><br>指认后进入卷宗重审，找出隐藏矛盾</div>
+    </div>`;
+  showModal(`${S('i-book',18)} 游戏指南`,tutorial,`<button class="modal-btn" onclick="closeModal()">开始调查</button>`);
+  G.tutorialShown=true;save();
+}
 function showTwist(text,cb){
   let ov=document.getElementById('twist-ov'),tx=document.getElementById('twist-text');
   ov.classList.add('show');tx.textContent='';let i=0;
@@ -682,12 +746,13 @@ function rCases(){
   let h=`<div class="screen active"><div class="top-bar"><button class="back-btn" onclick="G.screen='menu';render()">${S('i-arrow-l')}</button><span class="bar-title">选择案件</span></div><div class="content">`;
   CASES.forEach((c,i)=>{
     let st=G.stars[c.id]||0;
+    let diffStars=c.diff||1;
     h+=`<div class="card" style="cursor:pointer" onclick="selCase(${i})">
       <div style="font-size:11px;color:#d4a017;letter-spacing:2px;margin-bottom:3px">案件 ${c.num}</div>
       <div style="font-size:17px;font-weight:700;margin-bottom:4px">${c.name}</div>
       <div style="font-size:13px;color:#9aa0a6;line-height:1.5;margin-bottom:8px">${c.brief}</div>
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <span style="display:inline-flex;padding:2px 8px;border-radius:8px;font-size:11px;background:#252a35;color:#9aa0a6">${c.diff}</span>
+        <div style="display:flex;gap:2px">${[1,2,3,4,5].map(n=>`<span style="color:${n<=diffStars?'#d4a017':'#2e3440'}">${S('i-star-f',14)}</span>`).join('')}</div>
         <div style="display:flex;gap:3px">${[1,2,3].map(n=>`<span style="color:${n<=st?'#d4a017':'#2e3440'}">${S('i-star-f',16)}</span>`).join('')}</div>
       </div></div>`;
   });
@@ -696,7 +761,10 @@ function rCases(){
 function selCase(i){
   G.ci=i;G.clues=[];G.dlog={};G.usedQ={};G.tlPlace={};G.synthDone=[];G.accSt={suspect:null,evidence:[]};G.insight=3;G.hints=0;G.revFound={};G.twist=false;G.curSc=0;G.tab='scene';G.inter=null;G.dlgLog=[];G.clueFilter='全部';
   save();G.screen='game';render();
-  setTimeout(()=>showModal(`${S('i-folder',18)} 案件简报`,`<p style="line-height:1.8">${CASES[i].briefing}</p>`,`<button class="modal-btn" onclick="closeModal()">开始调查</button>`),300);
+  let showTutorial=!G.tutorialShown;
+  setTimeout(()=>{
+    showModal(`${S('i-folder',18)} 案件简报`,`<p style="line-height:1.8">${CASES[i].briefing}</p>`,`<button class="modal-btn" onclick="closeModal();${showTutorial?'setTimeout(showTutorial,300)':''}">开始调查</button>`);
+  },300);
 }
 function rGame(){
   let c=CC2();if(!c)return;
@@ -706,7 +774,7 @@ function rGame(){
   let content='';
   switch(G.tab){case'scene':content=rScene(c);break;case'suspect':content=rSuspects(c);break;case'timeline':content=rTimeline(c);break;case'clues':content=rClues(c);break;case'accuse':content=rAccuse(c);break;}
   app.innerHTML=`<div class="screen active">
-    <div class="top-bar"><button class="back-btn" onclick="G.screen='cases';render()">${S('i-arrow-l')}</button><span class="bar-title">${c.num} · ${c.name}</span><div class="bar-status"><span class="insight">${S('i-bulb',14)}${G.insight}</span><span>${cn}/${ct}</span></div><button class="settings-btn" onclick="showSettings()">${S('i-settings',20)}</button></div>
+    <div class="top-bar"><button class="back-btn" onclick="G.screen='cases';render()">${S('i-arrow-l')}</button><span class="bar-title">${c.num} · ${c.name}</span><div class="bar-status"><button class="hint-btn" onclick="showHint()" title="洞察提示">${S('i-bulb',16)}${G.insight}</button><span>${cn}/${ct}</span></div><button class="settings-btn" onclick="showSettings()">${S('i-settings',20)}</button></div>
     <div class="content">${rb}${content}</div>
     <div class="bottom-nav">${tabs.map(t=>`<button class="nav-item${G.tab===t.id?' active':''}" onclick="G.tab='${t.id}';render()">${S(t.ic,20)}<span>${t.l}</span></button>`).join('')}</div>
   </div>`;
@@ -892,11 +960,25 @@ function trueEnding(){
 function rEnd(){
   let c=CC2(),end=c.endings[G.endType];
   let starsH=[1,2,3].map(n=>`<span class="${n<=end.stars?'star-f':'star-e'}">${S('i-star-f',36)}</span>`).join('');
+  let reviewH='';
+  if(G.endType==='perfect'||G.endType==='true_end'){
+    let susName=c.suspects.find(s=>s.id===c.accusation.suspect)?.name||'未知';
+    let evNames=c.accusation.evidence.map(eid=>c.clues.find(cl=>cl.id===eid)?.n||'').filter(Boolean);
+    reviewH=`<div style="font-size:13px;color:#9aa0a6;margin-bottom:16px;text-align:left;width:100%;max-width:380px">
+      <div style="font-size:14px;font-weight:600;color:#d4a017;margin-bottom:8px">${S('i-bulb',16)} 推理回顾</div>
+      <div style="background:#1e222b;padding:12px;border-radius:10px;border:1px solid #2e3440;line-height:1.7">
+        <div style="margin-bottom:6px"><strong>凶手：</strong>${susName}</div>
+        <div style="margin-bottom:6px"><strong>关键证据：</strong>${evNames.join('、')}</div>
+        <div><strong>推理过程：</strong>${c.accusation.summary||end.desc}</div>
+      </div>
+    </div>`;
+  }
   app.innerHTML=`<div class="screen active end-screen">
     <div class="end-stars">${starsH}</div>
     <div style="font-size:22px;font-weight:700;margin-bottom:6px">${end.title}</div>
     <div style="font-size:13px;color:#9aa0a6;margin-bottom:20px">${c.name} · ${end.stars}星结局</div>
     <div style="font-size:14px;line-height:1.7;color:#9aa0a6;margin-bottom:24px;text-align:left;background:#1e222b;padding:14px;border-radius:10px;border:1px solid #2e3440;max-height:180px;overflow-y:auto">${end.desc}</div>
+    ${reviewH}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:260px">
       <button class="menu-btn btn-p" onclick="G.screen='cases';render()">返回案件列表</button>
       <button class="menu-btn btn-s" onclick="selCase(${G.ci})">重新调查</button>
