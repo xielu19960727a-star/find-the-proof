@@ -195,6 +195,97 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 @keyframes hpPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,.25)}50%{box-shadow:0 0 0 12px rgba(212,160,23,0)}}
 .menu-btn{transition:transform .15s}.menu-btn:active{transform:scale(.96)}
 .card{transition:border-color .2s}
+/* === Atmosphere Particles === */
+.atmo-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.atmo-rain{position:absolute;width:2px;background:linear-gradient(180deg,transparent,rgba(120,160,200,.5));animation:rainFall linear infinite}
+@keyframes rainFall{0%{transform:translateY(-100%)}100%{transform:translateY(calc(52vh + 20px))}}
+.atmo-dust{position:absolute;width:3px;height:3px;background:rgba(212,160,23,.25);border-radius:50%;animation:dustFloat linear infinite}
+@keyframes dustFloat{0%{transform:translate(0,0) scale(1);opacity:.2}50%{opacity:.5}100%{transform:translate(30px,-60px) scale(.5);opacity:0}}
+.atmo-fog{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,rgba(100,120,140,.12),transparent 70%);animation:fogDrift 8s ease-in-out infinite alternate}
+@keyframes fogDrift{0%{opacity:.3;transform:translateX(-5%)}100%{opacity:.6;transform:translateX(5%)}}
+.atmo-spark{position:absolute;width:4px;height:4px;background:radial-gradient(circle,rgba(255,180,50,.7),transparent);border-radius:50%;animation:sparkRise 3s ease-out infinite}
+@keyframes sparkRise{0%{transform:translateY(0) scale(1);opacity:.8}100%{transform:translateY(-80px) scale(0);opacity:0}}
+/* === Scene Backgrounds === */
+.scene-bg-study{background:linear-gradient(180deg,#1a1510,#161920)!important}
+.scene-bg-hall{background:linear-gradient(180deg,#18141a,#1a1d24)!important}
+.scene-bg-garden{background:linear-gradient(180deg,#0f1a14,#161920)!important}
+.scene-bg-kitchen{background:linear-gradient(180deg,#1a1814,#1a1d24)!important}
+.scene-bg-corridor{background:linear-gradient(180deg,#14161a,#1a1d24)!important}
+.scene-bg-lab{background:linear-gradient(180deg,#101a1a,#161920)!important}
+.scene-bg-office{background:linear-gradient(180deg,#161418,#1a1d24)!important}
+.scene-bg-icu{background:linear-gradient(180deg,#101418,#161920)!important}
+.scene-bg-suite{background:linear-gradient(180deg,#1a1418,#1a1d24)!important}
+.scene-bg-stage{background:linear-gradient(180deg,#1a0f14,#161920)!important}
+.scene-bg-gallery{background:linear-gradient(180deg,#14141a,#1a1d24)!important}
+.scene-bg-cabin{background:linear-gradient(180deg,#101820,#161920)!important}
+.scene-bg-deck{background:linear-gradient(180deg,#0f1520,#1a1d24)!important}
+.scene-bg-living{background:linear-gradient(180deg,#1a1610,#161920)!important}
+.scene-bg-cellar{background:linear-gradient(180deg,#0e1014,#1a1d24)!important}
+.scene-bg-default{background:linear-gradient(180deg,#161920,#1a1d24)!important}
+/* === Suspect Avatars === */
+.suspect-av-male{border-color:#3498db!important;background:linear-gradient(135deg,#1a2530,#252a35)!important}
+.suspect-av-female{border-color:#e74c8c!important;background:linear-gradient(135deg,#2a1a25,#252a35)!important}
+.suspect-av-elder{border-color:#9aa0a6!important;background:linear-gradient(135deg,#222,#252a35)!important}
+.suspect-av-suspect{border-color:#c0392b!important;box-shadow:0 0 8px rgba(192,57,43,.2)!important}
+/* === Furniture Visuals === */
+.sc-furn{overflow:hidden}
+.sc-furn::after{content:attr(data-label);position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:9px;color:rgba(154,160,166,.6);pointer-events:none}
+/* === Notebook === */
+.notebook-btn{position:fixed;bottom:calc(70px + env(safe-area-inset-bottom,0px));right:calc(10px + (100% - 480px) / 2);width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#252a35,#1e222b);border:1px solid #2e3440;display:flex;align-items:center;justify-content:center;color:#d4a017;z-index:15;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer}
+.notebook-btn:active{transform:scale(.92)}
+.notebook-panel{position:fixed;bottom:calc(120px + env(safe-area-inset-bottom,0px));right:calc(10px + (100% - 480px) / 2);width:280px;max-height:320px;background:#1e222b;border:1px solid #2e3440;border-radius:14px;z-index:25;box-shadow:0 4px 20px rgba(0,0,0,.5);display:none;flex-direction:column;overflow:hidden}
+.notebook-panel.show{display:flex;animation:fadeIn .25s ease}
+.notebook-header{padding:12px 14px;border-bottom:1px solid #2e3440;font-size:14px;font-weight:600;color:#d4a017;display:flex;align-items:center;gap:6px}
+.notebook-body{flex:1;overflow-y:auto;padding:10px 14px}
+.notebook-entry{padding:8px 10px;background:#252a35;border-radius:8px;margin-bottom:6px;font-size:12px;line-height:1.6;color:#9aa0a6;border-left:2px solid #d4a017}
+.notebook-input{width:100%;padding:8px 10px;background:#252a35;border:1px solid #2e3440;border-radius:8px;color:#e8e6e3;font-size:12px;resize:none;min-height:50px;font-family:inherit;outline:none}
+.notebook-input:focus{border-color:#d4a017}
+/* === Clue Association Hints === */
+.clue-hint-glow{animation:clueHintPulse 1.5s ease-in-out infinite}
+@keyframes clueHintPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,0)}50%{box-shadow:0 0 0 4px rgba(212,160,23,.2)}}
+.clue-synth-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:6px;font-size:10px;background:rgba(212,160,23,.12);color:#d4a017;margin-top:4px}
+/* === Pressure System === */
+.pressure-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:#252a35;border-radius:8px;margin-bottom:8px}
+.pressure-track{flex:1;height:6px;background:#2e3440;border-radius:3px;overflow:hidden}
+.pressure-fill{height:100%;border-radius:3px;transition:width .3s,background .3s}
+.pressure-low{background:#27ae60}.pressure-mid{background:#d4a017}.pressure-high{background:#c0392b}
+.pressure-label{font-size:11px;color:#9aa0a6;min-width:36px}
+/* === Case Progress on Menu === */
+.case-card-progress{display:flex;align-items:center;gap:6px;margin-top:6px}
+.case-card-progress-bar{flex:1;height:3px;background:#2e3440;border-radius:2px;overflow:hidden}
+.case-card-progress-fill{height:100%;border-radius:2px;transition:width .3s}
+.case-card-progress-text{font-size:10px;color:#9aa0a6;min-width:28px;text-align:right}
+/* === Ending Animation === */
+@keyframes starReveal{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.3) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes titleSlide{0%{transform:translateY(20px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.end-star-anim{animation:starReveal .6s ease forwards;opacity:0}
+.end-star-anim:nth-child(2){animation-delay:.2s}
+.end-star-anim:nth-child(3){animation-delay:.4s}
+.end-title-anim{animation:titleSlide .5s ease .5s forwards;opacity:0}
+.end-desc-anim{animation:titleSlide .5s ease .7s forwards;opacity:0}
+/* === Theme Support === */
+body.theme-sepia{color:#d4c5a9}
+body.theme-sepia #app{background:linear-gradient(180deg,#1a1610,#201c14)}
+body.theme-sepia .screen{background:#1a1610}
+body.theme-sepia .card,body.theme-sepia .modal{background:#201c14;border-color:#3a3428}
+body.theme-sepia .top-bar,body.theme-sepia .bottom-nav{background:rgba(26,22,16,.95);border-color:#3a3428}
+body.theme-sepia .sc-furn{background:#252018;border-color:#3a3428}
+body.theme-sepia .scene-wrap{background:linear-gradient(180deg,#1a1610,#201c14);border-color:#3a3428}
+body.theme-sepia .dlg-text,body.theme-sepia .q-btn,body.theme-sepia .pool-item{background:#252018}
+body.theme-ocean{color:#c8dce8}
+body.theme-ocean #app{background:linear-gradient(180deg,#0a1520,#0f1a28)}
+body.theme-ocean .screen{background:#0a1520}
+body.theme-ocean .card,body.theme-ocean .modal{background:#0f1a28;border-color:#1a3040}
+body.theme-ocean .top-bar,body.theme-ocean .bottom-nav{background:rgba(10,21,32,.95);border-color:#1a3040}
+body.theme-ocean .sc-furn{background:#0f1a28;border-color:#1a3040}
+body.theme-ocean .scene-wrap{background:linear-gradient(180deg,#0a1520,#0f1a28);border-color:#1a3040}
+body.theme-ocean .hotspot>svg{color:#4fc3f7}
+body.theme-ocean .hotspot::before{border-color:rgba(79,195,247,.7);box-shadow:0 0 12px rgba(79,195,247,.35)}
+body.theme-ocean .hp-label{color:#4fc3f7}
+body.theme-ocean .text-accent{color:#4fc3f7}
+/* === Gesture Support === */
+.scene-wrap{touch-action:manipulation}
+.longpress-hint{position:absolute;bottom:8px;right:8px;font-size:10px;color:rgba(154,160,166,.5);z-index:4;pointer-events:none}
 </style>
 </head>
 <body>
@@ -252,6 +343,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 2c0 4-4 6-4 10a4 4 0 008 0c0-4-4-6-4-10z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 18a2 2 0 002-2c0-2-2-3-2-5 0 2-2 3-2 5a2 2 0 002 2z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
 </svg>
 <div id="app"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:#9aa0a6;text-align:center;padding:32px"><div style="font-size:18px;color:#d4a017">疑案手札</div><div>正在加载，请稍候…</div><div style="font-size:12px">若长时间无响应，请尝试使用 Edge 或 Chrome 浏览器打开</div></div></div>
 <noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0f1115;color:#e8e6e3;text-align:center;padding:32px;z-index:999"><div><div style="font-size:20px;color:#d4a017;margin-bottom:12px">疑案手札</div><div>请启用 JavaScript 以运行游戏</div></div></div></noscript>
@@ -602,9 +694,11 @@ perfect:{title:'侦探的觉醒',desc:'钱志明不仅要骗保——要让前�
 
 /* ===== STATE ===== */
 let G={screen:'menu',ci:-1,tab:'scene',clues:[],dlog:{},usedQ:{},tlPlace:{},synthDone:[],accSt:{suspect:null,evidence:[]},insight:3,hints:0,stars:{},ach:{},revFound:{},twist:false,selPool:null,selSynth:[0,null,null],synthSlot:1,evPick:false,curSc:0,inter:null,dlgLog:[],clueFilter:'全部',endType:null,slot:0,tutorialShown:false,stats:{totalTime:0,totalClues:0,perfectCount:0,clearCount:0,sessionStart:Date.now()}};
-let settings={sfx:true,bgm:true};
+let settings={sfx:true,bgm:true,theme:'default'};
 function saveSettings(){try{localStorage.setItem('det_settings',JSON.stringify(settings))}catch(e){}}
-function loadSettings(){try{let d=JSON.parse(localStorage.getItem('det_settings'));if(d)Object.assign(settings,d)}catch(e){}}
+function loadSettings(){try{let d=JSON.parse(localStorage.getItem('det_settings'));if(d)Object.assign(settings,d);applyTheme()}catch(e){}}
+function applyTheme(){document.body.className=settings.theme&&settings.theme!=='default'?`theme-${settings.theme}`:''}
+function setTheme(t){settings.theme=t;saveSettings();applyTheme();showSettings()}
 function save(slot){
   slot=slot!==undefined?slot:G.slot;
   try{
@@ -672,6 +766,46 @@ function stopBGM(){
   bgmNodes=null;
 }
 document.addEventListener('click',function _bgmInit(){if(audioCtx.state==='suspended')audioCtx.resume();startBGM();document.removeEventListener('click',_bgmInit);},{once:true});
+
+/* ===== ATMOSPHERE ===== */
+const ATMOS={study:'fog',hall:'dust',garden:'rain',kitchen:'fog',corridor:'dust',corridor_h:'dust',lab:'dust',office:'fog',storage:'dust',icu:'fog',pharmacy:'dust',nurse_station:'dust',suite:'spark',lobby:'hall',ac_room:'fog',corridor_c:'fog',stage:'spark',dressing:'dust',props:'dust',gallery:'fog',control_rm:'dust',ventilation:'dust',storage_m:'dust',cabin:'fog',deck:'rain',bridge:'cabin',lifeboat_d:'fog',living_r:'fog',cellar:'fog',construction:'dust',garden_o:'rain'};
+function renderAtmo(sid){
+  let type=ATMOS[sid]||'dust',el=document.createElement('div');el.className='atmo-layer';
+  if(type==='rain'){for(let i=0;i<18;i++){let d=document.createElement('div');d.className='atmo-rain';d.style.cssText=`left:${Math.random()*100}%;height:${12+Math.random()*18}px;animation-duration:${.4+Math.random()*.4}s;animation-delay:${Math.random()*2}s`;el.appendChild(d)}}
+  else if(type==='fog'){let f=document.createElement('div');f.className='atmo-fog';el.appendChild(f)}
+  else if(type==='spark'){for(let i=0;i<8;i++){let d=document.createElement('div');d.className='atmo-spark';d.style.cssText=`left:${20+Math.random()*60}%;bottom:${10+Math.random()*20}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*2}s`;el.appendChild(d)}}
+  else{for(let i=0;i<12;i++){let d=document.createElement('div');d.className='atmo-dust';d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${4+Math.random()*6}s;animation-delay:${Math.random()*4}s`;el.appendChild(d)}}
+  return el;
+}
+function sceneBgClass(sid){let m={study:'study',hall:'hall',garden:'garden',kitchen:'kitchen',corridor:'corridor',corridor_h:'corridor',corridor_c:'corridor',lab:'lab',office:'office',icu:'icu',nurse_station:'icu',suite:'suite',lobby:'hall',stage:'stage',gallery:'gallery',control_rm:'gallery',storage_m:'gallery',cabin:'cabin',deck:'deck',bridge:'cabin',lifeboat_d:'deck',living_r:'living',cellar:'cellar',garden_o:'garden'};return 'scene-bg-'+(m[sid]||'default')}
+
+/* ===== ENHANCED SOUNDS ===== */
+function playSoundEx(type){
+  if(!settings.sfx)return;
+  try{if(audioCtx.state==='suspended')audioCtx.resume();const t=audioCtx.currentTime;
+    if(type==='page'){const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*.08,audioCtx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*.08*(1-i/d.length);const src=audioCtx.createBufferSource();src.buffer=buf;src.connect(audioCtx.destination);src.start(t)}
+    else if(type==='click'){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=1200;g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.05)}
+    else if(type==='unlock'){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(600,t);o.frequency.exponentialRampToValueAtTime(1200,t+.15);g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.2)}
+    else if(type==='pressure'){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sawtooth';o.frequency.value=150;g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.3)}
+    else if(type==='note'){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='triangle';o.frequency.value=440;g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.15)}
+  }catch(e){}
+}
+
+/* ===== NOTEBOOK ===== */
+let notebookEntries=[];
+function loadNotebook(){try{let d=JSON.parse(localStorage.getItem('det_notebook'));if(d)notebookEntries=d}catch(e){}}
+function saveNotebook(){try{localStorage.setItem('det_notebook',JSON.stringify(notebookEntries))}catch(e){}}
+function addNote(text){if(!text.trim())return;notebookEntries.push({text:text.trim(),time:new Date().toLocaleString('zh-CN'),case:G.ci>=0?CASES[G.ci].name:''});saveNotebook();playSoundEx('note')}
+function removeNote(idx){notebookEntries.splice(idx,1);saveNotebook()}
+loadNotebook();
+function toggleNotebook(){
+  let existing=document.querySelector('.notebook-panel');
+  if(existing){existing.remove();return}
+  let panel=document.createElement('div');panel.className='notebook-panel show';
+  let entriesH=notebookEntries.length?notebookEntries.slice().reverse().map((e,i)=>{let ri=notebookEntries.length-1-i;return`<div class="notebook-entry"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:10px;color:#d4a017">${e.case||'笔记'}</span><span style="font-size:10px;color:#9aa0a6">${e.time}</span></div><div>${e.text}</div><button style="font-size:10px;color:#c0392b;margin-top:4px;background:none;border:none;cursor:pointer" onclick="removeNote(${ri});toggleNotebook();toggleNotebook()">删除</button></div>`}).join(''):'<div style="color:#9aa0a6;font-size:12px;text-align:center;padding:16px">暂无笔记</div>';
+  panel.innerHTML=`<div class="notebook-header">${S('i-book',16)} 侦探笔记</div><div class="notebook-body">${entriesH}<textarea class="notebook-input" id="nb-input" placeholder="记录你的推理思路…"></textarea><button style="width:100%;margin-top:6px;padding:6px;border-radius:8px;background:rgba(212,160,23,.15);color:#d4a017;border:1px solid rgba(212,160,23,.3);font-size:12px;font-weight:600;cursor:pointer" onclick="addNote(document.getElementById('nb-input').value);toggleNotebook();toggleNotebook()">添加笔记</button></div>`;
+  app.appendChild(panel);
+}
 
 /* ===== UI HELPERS ===== */
 function toast(msg,type='clue'){
@@ -795,6 +929,12 @@ function showSettings(){
       <div class="settings-toggle-label">${S('i-music',18)} 背景音乐</div>
       <div class="toggle-switch${settings.bgm?' active':''}" onclick="toggleBgm()"></div>
     </div>
+    <div class="settings-toggle">
+      <div class="settings-toggle-label">${S('i-eye',18)} 主题</div>
+      <div style="display:flex;gap:6px">
+        ${['default','sepia','ocean'].map(t=>`<button style="padding:4px 10px;border-radius:12px;font-size:11px;border:1px solid ${settings.theme===t?'#d4a017':'#2e3440'};background:${settings.theme===t?'rgba(212,160,23,.15)':'#252a35'};color:${settings.theme===t?'#d4a017':'#9aa0a6'}" onclick="setTheme('${t}')">${t==='default'?'默认':t==='sepia'?'复古':'深海'}</button>`).join('')}
+      </div>
+    </div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2e3440">
       <div style="font-size:13px;color:#9aa0a6;margin-bottom:8px">当前存档: 存档 ${G.slot+1}</div>
       <button class="menu-btn btn-s" style="width:100%;margin-bottom:8px" onclick="save();toast('已保存到存档 '+(G.slot+1),'ok');closeModal()">手动保存</button>
@@ -827,7 +967,9 @@ function rCases(){
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;gap:2px">${[1,2,3,4,5].map(n=>`<span style="color:${n<=diffStars?'#d4a017':'#2e3440'}">${S('i-star-f',14)}</span>`).join('')}</div>
         <div style="display:flex;gap:3px;align-items:center">${endBadge}${[1,2,3].map(n=>`<span style="color:${n<=st?'#d4a017':'#2e3440'}">${S('i-star-f',16)}</span>`).join('')}</div>
-      </div></div>`;
+      </div>
+      <div class="case-card-progress"><div class="case-card-progress-bar"><div class="case-card-progress-fill" style="width:${st>0?100:0}%;background:${st>=3?'#27ae60':st>=2?'#d4a017':st>=1?'#8e44ad':'#2e3440'}"></div></div><div class="case-card-progress-text">${st>0?(st>=3?'完美':st>=2?'真相':'已通关'):'未调查'}</div></div>
+      </div>`;
   });
   h+=`</div></div>`;app.innerHTML=h;
 }
@@ -849,8 +991,17 @@ function rGame(){
   app.innerHTML=`<div class="screen active">
     <div class="top-bar"><button class="back-btn" onclick="confirmBack()">${S('i-arrow-l')}</button><span class="bar-title">${c.num} · ${c.name}</span><div class="bar-status"><button class="hint-btn" onclick="showHint()" title="洞察提示">${S('i-bulb',16)}${G.insight}</button><span>${cn}/${ct}</span></div><button class="settings-btn" onclick="showSettings()">${S('i-settings',20)}</button></div>
     <div class="content content-inner">${rb}${content}</div>
-    <div class="bottom-nav">${tabs.map(t=>`<button class="nav-item${G.tab===t.id?' active':''}" onclick="G.tab='${t.id}';render()">${S(t.ic,20)}<span>${t.l}</span></button>`).join('')}</div>
+    <div class="bottom-nav">${tabs.map(t=>`<button class="nav-item${G.tab===t.id?' active':''}" onclick="playSoundEx('click');G.tab='${t.id}';render()">${S(t.ic,20)}<span>${t.l}</span></button>`).join('')}</div>
   </div>`;
+  if(G.tab==='scene'){let sw=document.getElementById('scene-wrap');if(sw){let atmo=renderAtmo(c.scenes[G.curSc].id);sw.appendChild(atmo);setupLongPress(sw)}}
+  let nbBtn=document.createElement('button');nbBtn.className='notebook-btn';nbBtn.innerHTML=S('i-book',20);nbBtn.onclick=toggleNotebook;app.appendChild(nbBtn);
+}
+function setupLongPress(el){
+  let timer=null,startX=0,startY=0;
+  el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;timer=setTimeout(()=>{let c=CC2(),sc=c.scenes[G.curSc];addNote(`场景笔记 [${sc.name}]: 发现可疑之处…`);toast('已记录到笔记本','ok');if(navigator.vibrate)navigator.vibrate(50)},600)},{passive:true});
+  el.addEventListener('touchmove',e=>{let dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(Math.sqrt(dx*dx+dy*dy)>10&&timer){clearTimeout(timer);timer=null}},{passive:true});
+  el.addEventListener('touchend',()=>{if(timer){clearTimeout(timer);timer=null}},{passive:true});
+  el.addEventListener('touchcancel',()=>{if(timer){clearTimeout(timer);timer=null}},{passive:true});
 }
 function confirmBack(){
   showConfirm('确定要离开当前案件吗？未保存的进度将丢失。',()=>{G.screen='cases';render();});
@@ -859,31 +1010,39 @@ function confirmBack(){
 /* Scene */
 function rScene(c){
   let sc=c.scenes[G.curSc];
-  let tabs=c.scenes.map((s,i)=>`<button class="scene-tab${i===G.curSc?' active':''}" onclick="G.curSc=${i};render()">${s.name}</button>`).join('');
+  let tabs=c.scenes.map((s,i)=>`<button class="scene-tab${i===G.curSc?' active':''}" onclick="playSoundEx('page');G.curSc=${i};render()">${s.name}</button>`).join('');
   let ly=sc.layout;
   let walls=ly.walls.map(w=>`<div class="sc-wall" style="left:${w.x}%;top:${w.y}%;width:${w.w}%;height:${w.h}%"></div>`).join('');
-  let furn=ly.furniture.map(f=>`<div class="sc-furn" style="left:${f.x}%;top:${f.y}%;width:${f.w}%;height:${f.h}%"></div>`).join('');
+  let furn=ly.furniture.map(f=>`<div class="sc-furn" style="left:${f.x}%;top:${f.y}%;width:${f.w}%;height:${f.h}%" data-label="${f.l||''}"></div>`).join('');
   let hps=sc.hotspots.map(h=>{
     let done=h.clues.every(cl=>hasClue(cl));
     let hid=h.requires&&!hasClue(h.requires);
     return`<div class="hotspot${done?' done':''}${hid?' hidden':''}" style="left:${h.x}%;top:${h.y}%" onclick="clickHP('${h.id}')">${S(IC[h.ic]||'i-search',20)}<span class="hp-label">${h.name||''}</span></div>`;
   }).join('');
-  return`<div class="scene-tabs">${tabs}</div><div class="scene-wrap content-inner">${walls}${furn}${hps}<div style="position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:11px;color:#9aa0a6">${sc.name}</div></div><div style="font-size:13px;color:#9aa0a6;text-align:center">点击发光点调查</div>`;
+  return`<div class="scene-tabs">${tabs}</div><div class="scene-wrap ${sceneBgClass(sc.id)}" id="scene-wrap">${walls}${furn}${hps}<div style="position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:11px;color:#9aa0a6">${sc.name}</div></div><div style="font-size:13px;color:#9aa0a6;text-align:center">点击发光点调查</div>`;
 }
 function clickHP(hid){
   let c=CC2(),sc=c.scenes[G.curSc],h=sc.hotspots.find(x=>x.id===hid);if(!h)return;
   let nw=h.clues.filter(cl=>!hasClue(cl));
   nw.forEach(cl=>{addClue(cl);let cd=c.clues.find(x=>x.id===cl);if(cd)toast(`发现：${cd.n}`)});
+  if(nw.length)playSoundEx('unlock');
   let ch=nw.map(cl=>{let cd=c.clues.find(x=>x.id===cl);return cd?`<div class="clue-found">${S('i-key',16)}${cd.n}</div>`:''}).join('');
   if(!nw.length&&!h.clues.length)ch='<p style="color:#9aa0a6;font-size:13px">没有更多发现了。</p>';
   showModal(`${S('i-search',18)} ${h.name}`,`<p>${h.desc}</p>${ch}`,`<button class="modal-btn" onclick="closeModal();render()">确定</button>`);
 }
 
 /* Suspects */
+function suspectAvClass(s){
+  let role=s.role||'',name=s.name||'';
+  if(/女|妻|妾|媳|姐|妹|姑|嫂|婶|娘|母|妪|妃|后|仙|娥|嫦|护士|侍女|女仆|丫鬟|女佣/.test(role))return'suspect-av-female';
+  if(/婆|爷|奶|翁|老|退休|年迈/.test(role))return'suspect-av-elder';
+  if(/[芳丽娟梅兰竹菊莲蓉萍霞玲琴燕莺凤婷娜雪月春秀英玉珠翠红薇莎妮娅]/.test(name))return'suspect-av-female';
+  return'suspect-av-male';
+}
 function rSuspects(c){
   if(G.inter!==null)return rInter(c);
-  return c.suspects.map(s=>`<div class="card suspect-card" onclick="G.inter='${s.id}';G.dlgLog=[];render()">
-    <div class="suspect-av">${S('i-person',26)}</div>
+  return c.suspects.map(s=>`<div class="card suspect-card" onclick="G.inter='${s.id}';G.dlgLog=[];if(!G.pressure)G.pressure={};G.pressure['${s.id}']=0;render()">
+    <div class="suspect-av ${suspectAvClass(s)}">${S('i-person',26)}</div>
     <div style="flex:1"><div style="font-size:15px;font-weight:600">${s.name}</div><div style="font-size:12px;color:#9aa0a6">${s.role}</div></div>
     ${S('i-arrow-r',18)}
   </div>`).join('');
@@ -891,6 +1050,10 @@ function rSuspects(c){
 function rInter(c){
   let s=c.suspects.find(x=>x.id===G.inter);if(!s)return'';
   if(!G.dlgLog)G.dlgLog=[];
+  if(!G.pressure)G.pressure={};
+  let pVal=G.pressure[G.inter]||0;
+  let pClass=pVal>=70?'pressure-high':pVal>=40?'pressure-mid':'pressure-low';
+  let pressureH=`<div class="pressure-bar"><span class="pressure-label">${S('i-fire',12)} 压力</span><div class="pressure-track"><div class="pressure-fill ${pClass}" style="width:${pVal}%"></div></div><span class="pressure-label">${pVal}%</span></div>`;
   let logH=G.dlgLog.map(d=>`<div class="dlg-bubble"><div class="dlg-speaker">${d.w}</div><div class="dlg-text${d.rev?' reveal':''}${d.con?' contra':''}${d.anim?' dlg-text-animate':''}">${d.t}</div></div>`).join('');
   let qs=s.dlgs.filter((d,i)=>d.q&&(d.req?hasClue(d.req):true)&&(!G.usedQ[G.inter]||!G.usedQ[G.inter].includes(i)));
   let qH=qs.length?qs.map(d=>{
@@ -900,10 +1063,11 @@ function rInter(c){
   }).join(''):'<div style="font-size:13px;color:#9aa0a6;padding:8px">暂无更多问题</div>';
   return`<div style="display:flex;flex-direction:column;height:100%;overflow:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #2e3440;flex-shrink:0">
-      <div class="suspect-av">${S('i-person',26)}</div>
+      <div class="suspect-av ${suspectAvClass(s)}">${S('i-person',26)}</div>
       <div style="flex:1"><div style="font-size:15px;font-weight:600">${s.name}</div><div style="font-size:12px;color:#9aa0a6">${s.role}</div></div>
       <button class="back-btn" onclick="G.inter=null;render()">${S('i-arrow-l')}</button>
     </div>
+    ${pressureH}
     <div class="dlg-area">${logH}</div>
     <div class="q-area">
       <div style="display:flex;gap:6px;padding:8px 0;flex-shrink:0"><button class="ev-btn" onclick="G.evPick=!G.evPick;render()">${S('i-key',14)}出示证据</button></div>
@@ -925,15 +1089,23 @@ function askQ(idx){
   let c=CC2(),s=c.suspects.find(x=>x.id===G.inter),d=s.dlgs[idx];if(!d)return;
   if(!G.usedQ[G.inter])G.usedQ[G.inter]=[];
   G.usedQ[G.inter].push(idx);
+  if(!G.pressure)G.pressure={};
+  G.pressure[G.inter]=Math.min(100,(G.pressure[G.inter]||0)+12);
   G.dlgLog.push({w:'你',t:d.q});
-  G.dlgLog.push({w:s.name,t:d.a||d.t,rev:!!(d.r&&d.r.length),con:!!d.c,anim:true});
+  let pVal=G.pressure[G.inter];
+  let responseText=d.a||d.t;
+  if(pVal>=70&&d.c)responseText='……'+responseText;
+  G.dlgLog.push({w:s.name,t:responseText,rev:!!(d.r&&d.r.length),con:!!d.c,anim:true});
   if(d.r)d.r.forEach(r=>{if(addClue(r)){let cd=c.clues.find(x=>x.id===r);if(cd)toast(`解锁：${cd.n}`)}});
+  playSoundEx('pressure');
   save();render();
   let area=document.querySelector('.dlg-area');if(area)area.scrollTop=area.scrollHeight;
 }
 function presentEv(clueId){
   G.evPick=false;
   let c=CC2(),s=c.suspects.find(x=>x.id===G.inter);
+  if(!G.pressure)G.pressure={};
+  G.pressure[G.inter]=Math.min(100,(G.pressure[G.inter]||0)+18);
   let m=s.dlgs.find((d,i)=>d.ev===clueId&&(!G.usedQ[G.inter]||!G.usedQ[G.inter].includes(i)));
   if(m){G.dlgLog.push({w:'你',t:`（出示：${c.clues.find(x=>x.id===clueId)?.n}）`});askQ(s.dlgs.indexOf(m));}
   else{G.dlgLog.push({w:'你',t:`（出示：${c.clues.find(x=>x.id===clueId)?.n}）`});G.dlgLog.push({w:s.name,t:'这和我的供述没有关系。'});toast('证据不相关','warn');save();render();}
@@ -961,8 +1133,12 @@ function rClues(c){
   let flt=G.clueFilter,cats=['全部','物证','口供','文件','推理'];
   let fl=flt==='全部'?G.clues:G.clues.filter(cl=>{let cd=c.clues.find(x=>x.id===cl);return cd&&cd.cat===flt});
   let fltH=cats.map(cat=>`<button class="clue-filter${flt===cat?' active':''}" onclick="G.clueFilter='${cat}';render()">${cat}</button>`).join('');
+  let availSynth=c.synthesis?c.synthesis.filter(sy=>!G.synthDone.includes(sy.input.slice().sort().join(','))):[];
   let cards=fl.map(cl=>{let cd=c.clues.find(x=>x.id===cl);if(!cd)return'';
-    return`<div class="card" style="padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="badge ${CC[cd.cat]||'badge-ev'}">${cd.cat}</span><span style="font-size:14px;font-weight:600;flex:1">${cd.n}</span></div><div style="font-size:13px;color:#9aa0a6;line-height:1.5">${cd.d}</div></div>`;
+    let canSynth=availSynth.filter(sy=>sy.input.includes(cl));
+    let hintH=canSynth.length>0?`<div class="clue-synth-badge">${S('i-bulb',10)} 可合成 ${canSynth.length} 组</div>`:'';
+    let glowClass=canSynth.length>0?' clue-hint-glow':'';
+    return`<div class="card${glowClass}" style="padding:12px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="badge ${CC[cd.cat]||'badge-ev'}">${cd.cat}</span><span style="font-size:14px;font-weight:600;flex:1">${cd.n}</span></div><div style="font-size:13px;color:#9aa0a6;line-height:1.5">${cd.d}</div>${hintH}</div>`;
   }).join('');
   let synth=rSynth(c);
   return`<div class="clue-filters">${fltH}</div>${cards||'<div class="empty-state">'+S('i-clipboard',42)+'<div>暂无线索</div></div>'}<div class="divider"></div><div style="font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">${S('i-plus',16)}线索合成</div>${synth}`;
@@ -1041,7 +1217,7 @@ function trueEnding(){
 /* Ending */
 function rEnd(){
   let c=CC2(),end=c.endings[G.endType];
-  let starsH=[1,2,3].map(n=>`<span class="${n<=end.stars?'star-f':'star-e'}">${S('i-star-f',36)}</span>`).join('');
+  let starsH=[1,2,3].map(n=>`<span class="${n<=end.stars?'star-f end-star-anim':'star-e'}">${S('i-star-f',36)}</span>`).join('');
   let reviewH='';
   if(G.endType==='perfect'||G.endType==='true_end'){
     let susName=c.suspects.find(s=>s.id===c.accusation.suspect)?.name||'未知';
@@ -1057,9 +1233,9 @@ function rEnd(){
   }
   app.innerHTML=`<div class="screen active end-screen">
     <div class="end-stars">${starsH}</div>
-    <div style="font-size:22px;font-weight:700;margin-bottom:6px">${end.title}</div>
-    <div style="font-size:13px;color:#9aa0a6;margin-bottom:20px">${c.name} · ${end.stars}星结局</div>
-    <div style="font-size:14px;line-height:1.7;color:#9aa0a6;margin-bottom:24px;text-align:left;background:#1e222b;padding:14px;border-radius:10px;border:1px solid #2e3440;max-height:180px;overflow-y:auto">${end.desc}</div>
+    <div class="end-title-anim" style="font-size:22px;font-weight:700;margin-bottom:6px">${end.title}</div>
+    <div class="end-title-anim" style="font-size:13px;color:#9aa0a6;margin-bottom:20px;animation-delay:.6s">${c.name} · ${end.stars}星结局</div>
+    <div class="end-desc-anim" style="font-size:14px;line-height:1.7;color:#9aa0a6;margin-bottom:24px;text-align:left;background:#1e222b;padding:14px;border-radius:10px;border:1px solid #2e3440;max-height:180px;overflow-y:auto">${end.desc}</div>
     ${reviewH}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:260px">
       <button class="menu-btn btn-p" onclick="shareResult()">分享推理报告</button>
